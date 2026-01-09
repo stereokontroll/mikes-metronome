@@ -1,6 +1,7 @@
 {
   "name": "Mike's Metronome",
   "short_name": "Metronome",
+  "description": "A simple, programmable metronome for musicians. Practice counts and improve your timing.",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#121212",
