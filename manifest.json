@@ -2,11 +2,16 @@
   "name": "Mike's Metronome",
   "short_name": "Metronome",
   "description": "A simple, programmable metronome for musicians. Practice counts and improve your timing.",
-  "start_url": "index.html",
+  "id": "mikes-metronome",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#1e1e1e",
   "orientation": "portrait",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["music", "utilities", "education"],
   "icons": [
     {
       "src": "icon-192.png",
@@ -17,6 +22,20 @@
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screen1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screen2.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ]
 }
