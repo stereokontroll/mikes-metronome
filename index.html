@@ -377,6 +377,9 @@
         let timerID = null;
         let nextNoteTime = 0.0;
         
+        // Wake Lock Variable
+        let wakeLock = null;
+
         // Basic Mode State
         let currentBeatIndex = 0;
         let basicAccents = []; 
@@ -440,6 +443,28 @@
 
         initCountInUI();
         renderStepList();
+
+        // --- WAKE LOCK FUNCTIONS ---
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Screen Wake Lock active');
+                } catch (err) {
+                    console.error(`${err.name}, ${err.message}`);
+                }
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release()
+                    .then(() => {
+                        wakeLock = null;
+                        console.log('Screen Wake Lock released');
+                    });
+            }
+        }
 
         // --- MENU LOGIC ---
         function toggleMenu() {
@@ -688,7 +713,13 @@
         }
 
         function addStep() {
-            sequence.push({ bpm: 100, beats: 4, value: 4, bars: 4, accents: [2,0,0,0] });
+            // NEW LOGIC: Inherit BPM from last step
+            let newBpm = 100;
+            if (sequence.length > 0) {
+                newBpm = sequence[sequence.length - 1].bpm;
+            }
+
+            sequence.push({ bpm: newBpm, beats: 4, value: 4, bars: 4, accents: [2,0,0,0] });
             renderStepList();
             saveSequence();
         }
@@ -794,8 +825,8 @@
                     advStepName.textContent = `Count-in`;
                     advBarCountEl.textContent = `Bar ${curBar} / ${step.bars}`;
                     if(freq === 1500) {
-                         advBarCountEl.style.color = "#03dac6";
-                         setTimeout(()=>advBarCountEl.style.color="#fff", 100);
+                          advBarCountEl.style.color = "#03dac6";
+                          setTimeout(()=>advBarCountEl.style.color="#fff", 100);
                     }
                 }, timeForVisual);
 
@@ -851,8 +882,17 @@
             setTimeout(() => {
                 countInBox.classList.remove('active');
                 document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+                
                 const activeRow = document.getElementById(`step-row-${currentStepIdxVis}`);
-                if(activeRow) activeRow.classList.add('active');
+                if(activeRow) {
+                    activeRow.classList.add('active');
+                    
+                    // NEW: Auto-scroll functionality
+                    activeRow.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
 
                 advStepName.textContent = `Step ${currentStepIdxVis + 1} / ${sequence.length}`;
                 advBarCountEl.textContent = `Bar ${currentBarVis} / ${step.bars}`;
@@ -890,6 +930,9 @@
             advStatus.style.display = 'none';
             document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
             countInBox.classList.remove('active');
+
+            // Release Wake Lock
+            releaseWakeLock();
         }
 
         mainBtn.addEventListener('click', () => {
@@ -917,6 +960,10 @@
                 isRunning = true;
                 mainBtn.textContent = "STOP";
                 mainBtn.classList.add('stop');
+
+                // Request Wake Lock
+                requestWakeLock();
+                
                 scheduler();
             }
         });
@@ -933,5 +980,3 @@
     </script>
 </body>
 </html>
-
-
