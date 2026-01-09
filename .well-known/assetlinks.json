@@ -1,8 +1,0 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "com.stereokontroll.metronome",
-        "sha256_cert_fingerprints": ["39:E0:BE:09:F1:92:05:BB:C3:F5:CC:E6:1A:51:E3:CD:31:95:7F:34:06:4F:1A:5A:5F:C5:5C:1E:39:43:FF:E5"]
-      }
-    }]
