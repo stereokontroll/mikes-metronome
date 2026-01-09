@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Mike's Metronome</title>
+
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Mike Metronome","short_name":"Metronome","display":"standalone","start_url":".","background_color":"#121212","theme_color":"#1e1e1e"}'>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1e1e1e">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231e1e1e'/%3E%3Cpath d='M50 25 L25 90 L75 90 Z' fill='%23666666'/%3E%3Cline x1='50' y1='90' x2='50' y2='15' stroke='%23aaaaaa' stroke-width='4'/%3E%3Ccircle cx='50' cy='35' r='8' fill='%2303dac6'/%3E%3Ctext x='50' y='85' font-family='Arial Black, sans-serif' font-size='35' font-weight='900' fill='%2303dac6' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231e1e1e'/%3E%3Cpath d='M50 25 L25 90 L75 90 Z' fill='%23666666'/%3E%3Cline x1='50' y1='90' x2='50' y2='15' stroke='%23aaaaaa' stroke-width='4'/%3E%3Ccircle cx='50' cy='35' r='8' fill='%2303dac6'/%3E%3Ctext x='50' y='85' font-family='Arial Black, sans-serif' font-size='35' font-weight='900' fill='%2303dac6' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+
+    <style>
+        /* --- GENERAL STYLES --- */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
+        }
+
+        /* --- HAMBURGER MENU STYLES --- */
+        .header-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            box-sizing: border-box;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 50;
+        }
+        
+        .hamburger-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        /* Menu Overlay (Background dimming) */
+        .menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .menu-overlay.open { display: block; opacity: 1; }
+
+        /* The Sliding Drawer */
+        .menu-drawer {
+            position: fixed; top: 0; left: 0; height: 100%; width: 280px;
+            background: #1e1e1e;
+            z-index: 201;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-out;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        .menu-drawer.open { transform: translateX(0); }
+
+        /* Menu Content */
+        .menu-header { font-size: 22px; font-weight: bold; margin-bottom: 30px; color: #03dac6; border-bottom: 1px solid #333; padding-bottom: 10px;}
+        .menu-section { margin-bottom: 30px; }
+        .menu-section h3 { font-size: 16px; color: #aaa; margin-bottom: 10px; text-transform: uppercase; }
+        .menu-text { font-size: 14px; line-height: 1.5; color: #ddd; }
+        
+        .coffee-btn {
+            display: block;
+            background-color: #FFDD00; /* Coffee Yellow */
+            color: #000;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-family: 'Segoe UI', sans-serif;
+            margin-top: 10px;
+        }
+        .close-menu-btn {
+            position: absolute; top: 15px; right: 15px;
+            background: none; border: none; color: #888; font-size: 24px; cursor: pointer;
+        }
+
+        /* --- TABS --- */
+        .tabs {
+            display: flex;
+            width: 90%;
+            max-width: 340px;
+            margin-top: 60px; /* Space for hamburger */
+            background: #222;
+            border-radius: 8px;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: #888;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        .tab-btn.active {
+            background: #333;
+            color: #03dac6;
+        }
+
+        /* --- PANELS --- */
+        .panel {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            flex: 1;
+            padding-top: 20px;
+            overflow-y: auto; 
+            padding-bottom: 140px; 
+        }
+        .panel.active { display: flex; }
+
+        .controls {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        h1 { margin: 0 0 20px 0; font-size: 20px; color: #e0e0e0; }
+        .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #aaaaaa; font-size: 12px; }
+        
+        input[type="number"], select {
+            background-color: #333; border: 1px solid #444; color: white;
+            padding: 10px; border-radius: 5px; text-align: center;
+            font-size: 18px; font-weight: bold; width: 100%; box-sizing: border-box; outline: none;
+        }
+        input:focus { border-color: #03dac6; }
+        
+        .beat-visualizer {
+            display: flex; justify-content: center; flex-wrap: wrap;
+            gap: 10px; margin: 20px 0; min-height: 30px;
+        }
+        .beat-dot {
+            width: 20px; height: 20px; background-color: #333;
+            border-radius: 50%; cursor: pointer; border: 2px solid #555; transition: transform 0.1s;
+        }
+        .beat-dot[data-level="1"] { background-color: #03dac6; border-color: #03dac6; } 
+        .beat-dot[data-level="2"] { background-color: #ff5252; border-color: #ff5252; } 
+        .beat-dot.playing { transform: scale(1.3); box-shadow: 0 0 10px white; border-color: #fff; }
+
+        /* --- ADVANCED LIST --- */
+        .step-list { width: 90%; max-width: 340px; }
+        
+        .count-in-box {
+            background: #1a2525; border: 1px solid #033631; 
+            border-radius: 8px; padding: 10px; margin-bottom: 20px;
+            position: relative;
+        }
+        .count-in-box.disabled { opacity: 0.5; border-color: #333; background: #222; }
+        .count-in-box.active { border: 2px solid #03dac6; box-shadow: 0 0 15px rgba(3, 218, 198, 0.2); }
+
+        .count-in-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+            border-bottom: 1px solid #333; padding-bottom: 5px;
+        }
+        .count-in-toggle { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; color: #03dac6; }
+        .count-in-toggle input { width: 18px; height: 18px; margin: 0; accent-color: #03dac6; }
+
+        .step-item {
+            background: #252525; border-radius: 8px; padding: 10px;
+            margin-bottom: 15px; border-left: 4px solid #444; position: relative;
+        }
+        .step-item.active { border-left-color: #03dac6; background: #2f2f2f; }
+        
+        .step-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .step-title { font-weight: bold; font-size: 14px; color: #ccc; }
+        .delete-btn { color: #ff5252; background: none; border: none; font-size: 20px; font-weight: bold; padding: 0 10px; cursor: pointer;}
+
+        .step-inputs { display: flex; gap: 5px; margin-bottom: 10px; }
+        .step-input-group { flex: 1; }
+        .step-input-group label { font-size: 10px; margin-bottom: 2px;}
+        .step-input-group input, .step-input-group select { font-size: 14px; padding: 5px; height: 35px; }
+        
+        .step-accents { display: flex; gap: 5px; flex-wrap: wrap; padding-top: 5px; border-top: 1px solid #333; }
+        .mini-dot { width: 15px; height: 15px; border-radius: 50%; border: 1px solid #555; background: #333; cursor: pointer; }
+        .mini-dot[data-level="1"] { background-color: #03dac6; border-color: #03dac6; }
+        .mini-dot[data-level="2"] { background-color: #ff5252; border-color: #ff5252; }
+
+        .add-btn {
+            background: #333; color: #fff; border: 1px dashed #666; cursor: pointer;
+            width: 100%; padding: 15px; border-radius: 8px; margin-top: 10px; font-weight: bold;
+        }
+
+        .repeat-wrapper {
+            margin-top: 25px; width: 90%; max-width: 340px;
+            display: flex; align-items: center; gap: 10px;
+            background: #252525; padding: 12px; border-radius: 8px;
+            border-top: 2px solid #444;
+        }
+        .repeat-wrapper input { width: 22px; height: 22px; accent-color: #03dac6; margin: 0; }
+        .repeat-wrapper label { font-size: 15px; color: #fff; margin: 0; cursor: pointer; font-weight: bold; }
+
+        .status-display {
+            position: fixed; top: 70px; left: 0; width: 100%; text-align: center;
+            pointer-events: none; z-index: 10;
+        }
+        .status-text {
+            background: rgba(0,0,0,0.85); padding: 5px 15px; border-radius: 20px;
+            font-size: 14px; color: #03dac6; font-weight: bold;
+        }
+        .huge-counter { font-size: 40px; font-weight: 900; color: #fff; text-shadow: 0 2px 10px #000; }
+
+        .main-btn-container { position: fixed; bottom: 20px; width: 85%; max-width: 320px; z-index: 100; }
+        button#mainActionBtn {
+            background-color: #03dac6; color: #000; border: none;
+            padding: 15px; font-size: 20px; border-radius: 50px; cursor: pointer;
+            width: 100%; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        button#mainActionBtn.stop { background-color: #ff5252; color: white; }
+
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <button class="hamburger-btn" onclick="toggleMenu()">&#9776;</button>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+    <div class="menu-drawer" id="menuDrawer">
+        <button class="close-menu-btn" onclick="toggleMenu()">×</button>
+        <div class="menu-header">Menu</div>
+        
+        <div class="menu-section">
+            <h3>About</h3>
+            <p class="menu-text">
+                Hi, I'm Mike! I'm a trumpet player and built this app to help musicians practice better.
+                <br><br>
+                Enjoy practicing!
+            </p>
+        </div>
+
+        <div class="menu-section">
+            <h3>Support</h3>
+            <p class="menu-text">Do you like this app? Consider supporting the development.</p>
+            <a href="#" target="_blank" class="coffee-btn">☕ Buy me a coffee</a>
+        </div>
+    </div>
+
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('basic')">Basic</button>
+        <button class="tab-btn" onclick="switchTab('advanced')">Advanced</button>
+    </div>
+
+    <div class="status-display" id="advStatus" style="display:none;">
+        <div class="status-text" id="advStepName">Step 1</div>
+        <div class="huge-counter" id="advBarCount">Bar 1</div>
+    </div>
+
+    <div id="panel-basic" class="panel active">
+        <div class="controls">
+            <h1>Mike's Metronome</h1>
+            <div class="row">
+                <div style="width: 45%;">
+                    <label>Tempo</label>
+                    <input type="number" id="bpm" value="100" min="30" max="300" onchange="saveBasicSettings()">
+                </div>
+                <div style="width: 48%;">
+                    <label>Time Signature</label>
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <input type="number" id="beatCountInput" value="4" min="1" max="16" style="width: 45%;" onchange="updateBasicDots(this.value); saveBasicSettings()">
+                        <span style="font-size: 20px; color:#666;">/</span>
+                        <select id="beatValueInput" style="width: 45%;" onchange="saveBasicSettings()">
+                            <option value="2">2</option>
+                            <option value="4" selected>4</option>
+                            <option value="8">8</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <p style="font-size:11px; color:#666;">Tap dots for accents</p>
+            <div class="beat-visualizer" id="beatContainer"></div>
+        </div>
+    </div>
+
+    <div id="panel-advanced" class="panel">
+        
+        <div class="step-list">
+            <div class="count-in-box" id="countInBox">
+                <div class="count-in-header">
+                    <label class="count-in-toggle">
+                        <input type="checkbox" id="countInCheck" onchange="toggleCountIn()">
+                        Start with Count-in
+                    </label>
+                </div>
+                <div id="countInControls" style="display:block;">
+                    <div class="step-inputs">
+                        <div class="step-input-group">
+                            <label>BPM</label>
+                            <input type="number" id="ciBpm" onchange="saveCountIn()">
+                        </div>
+                        <div class="step-input-group">
+                            <label>Sig.</label>
+                            <div style="display:flex; gap:2px;">
+                                <input type="number" id="ciBeats" onchange="updateCountInDots(); saveCountIn()">
+                                <select id="ciValue" onchange="saveCountIn()">
+                                    <option value="4">/4</option>
+                                    <option value="8">/8</option>
+                                    <option value="2">/2</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="step-input-group">
+                            <label>Bars</label>
+                            <input type="number" id="ciBars" onchange="saveCountIn()">
+                        </div>
+                    </div>
+                    <label style="font-size:10px; color:#666;">Count-in Accents:</label>
+                    <div class="step-accents" id="ciAccentsContainer"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-list" id="stepListContainer"></div>
+        
+        <div class="step-list">
+            <button class="add-btn" onclick="addStep()">+ Add Step</button>
+        </div>
+
+        <div class="repeat-wrapper">
+            <input type="checkbox" id="repeatCheckbox" onchange="saveRepeatSetting()">
+            <label for="repeatCheckbox">Loop Sequence</label>
+        </div>
+        <p style="font-size:11px; color:#666; margin-top:5px; text-align:center;">
+            (Count-in is skipped during loop)
+        </p>
+    </div>
+
+    <div class="main-btn-container">
+        <button id="mainActionBtn">START</button>
+    </div>
+
+    <script>
+        // --- GLOBAL VARIABLES ---
+        let currentMode = 'basic'; 
+        let isRunning = false;
+        let audioContext = null;
+        let timerID = null;
+        let nextNoteTime = 0.0;
+        
+        // Basic Mode State
+        let currentBeatIndex = 0;
+        let basicAccents = []; 
+
+        // Advanced Mode State
+        let sequence = [];
+        let countInSettings = { enabled: false, bpm: 100, beats: 4, value: 4, bars: 1, accents: [2,0,0,0] };
+        let isRepeatEnabled = false;
+
+        // Loop Variables
+        let playPhase = 0; // 0 = CountIn, 1 = Sequence
+        let currentStepIndex = 0; 
+        let advBarCounter = 1; 
+        let advBeatCounter = 0; 
+
+        // --- DOM ELEMENTS ---
+        const mainBtn = document.getElementById('mainActionBtn');
+        const basicPanel = document.getElementById('panel-basic');
+        const advPanel = document.getElementById('panel-advanced');
+        
+        // Menu Elements
+        const menuDrawer = document.getElementById('menuDrawer');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        // Status Displays
+        const advStatus = document.getElementById('advStatus');
+        const advStepName = document.getElementById('advStepName');
+        const advBarCountEl = document.getElementById('advBarCount');
+        
+        // Inputs Basic
+        const bpmInput = document.getElementById('bpm');
+        const beatCountInput = document.getElementById('beatCountInput');
+        const beatValueInput = document.getElementById('beatValueInput');
+        const beatContainer = document.getElementById('beatContainer');
+        const repeatCheckbox = document.getElementById('repeatCheckbox');
+        
+        // Inputs Count-in
+        const countInBox = document.getElementById('countInBox');
+        const countInCheck = document.getElementById('countInCheck');
+        const ciBpm = document.getElementById('ciBpm');
+        const ciBeats = document.getElementById('ciBeats');
+        const ciValue = document.getElementById('ciValue');
+        const ciBars = document.getElementById('ciBars');
+        const ciAccentsContainer = document.getElementById('ciAccentsContainer');
+
+        // --- INITIALIZATION ---
+        loadSettings(); 
+        
+        if(sequence.length === 0) {
+            sequence = [
+                { bpm: 100, beats: 4, value: 4, bars: 8, accents: [2,0,1,0] }
+            ];
+        }
+        
+        updateBasicDots(parseInt(beatCountInput.value));
+        const savedBasicAccents = localStorage.getItem('mikeMetronomeBasicAccents');
+        if(savedBasicAccents) {
+            basicAccents = JSON.parse(savedBasicAccents);
+            renderBasicDotsUI(); 
+        }
+
+        initCountInUI();
+        renderStepList();
+
+        // --- MENU LOGIC ---
+        function toggleMenu() {
+            const isOpen = menuDrawer.classList.contains('open');
+            if (isOpen) {
+                menuDrawer.classList.remove('open');
+                menuOverlay.classList.remove('open');
+                setTimeout(() => menuOverlay.style.display = 'none', 300);
+            } else {
+                menuOverlay.style.display = 'block';
+                // Small delay to allow display:block to apply before opacity transition
+                setTimeout(() => {
+                    menuDrawer.classList.add('open');
+                    menuOverlay.classList.add('open');
+                }, 10);
+            }
+        }
+
+        // --- LOCAL STORAGE ---
+        function saveBasicSettings() {
+            localStorage.setItem('mikeMetronomeBasicBpm', bpmInput.value);
+            localStorage.setItem('mikeMetronomeBasicCount', beatCountInput.value);
+            localStorage.setItem('mikeMetronomeBasicValue', beatValueInput.value);
+            localStorage.setItem('mikeMetronomeBasicAccents', JSON.stringify(basicAccents));
+        }
+
+        function saveSequence() {
+            localStorage.setItem('mikeMetronomeSequence', JSON.stringify(sequence));
+        }
+
+        function saveCountIn() {
+            countInSettings.enabled = countInCheck.checked;
+            countInSettings.bpm = parseInt(ciBpm.value);
+            countInSettings.beats = parseInt(ciBeats.value);
+            countInSettings.value = parseInt(ciValue.value);
+            countInSettings.bars = parseInt(ciBars.value);
+            localStorage.setItem('mikeMetronomeCountIn', JSON.stringify(countInSettings));
+            updateCountInUIState();
+        }
+
+        function saveRepeatSetting() {
+            isRepeatEnabled = repeatCheckbox.checked;
+            localStorage.setItem('mikeMetronomeRepeat', isRepeatEnabled);
+        }
+
+        function loadSettings() {
+            if(localStorage.getItem('mikeMetronomeBasicBpm')) bpmInput.value = localStorage.getItem('mikeMetronomeBasicBpm');
+            if(localStorage.getItem('mikeMetronomeBasicCount')) beatCountInput.value = localStorage.getItem('mikeMetronomeBasicCount');
+            if(localStorage.getItem('mikeMetronomeBasicValue')) beatValueInput.value = localStorage.getItem('mikeMetronomeBasicValue');
+            
+            if(localStorage.getItem('mikeMetronomeRepeat') === 'true') {
+                isRepeatEnabled = true;
+                repeatCheckbox.checked = true;
+            }
+
+            const savedCI = localStorage.getItem('mikeMetronomeCountIn');
+            if(savedCI) {
+                try { countInSettings = JSON.parse(savedCI); } catch(e) {}
+            }
+            if(!countInSettings.value) countInSettings.value = 4;
+            if(!countInSettings.accents || countInSettings.accents.length !== countInSettings.beats) {
+                countInSettings.accents = generateDefaultAccents(countInSettings.beats);
+            }
+
+            const savedSeq = localStorage.getItem('mikeMetronomeSequence');
+            if(savedSeq) {
+                try {
+                    sequence = JSON.parse(savedSeq);
+                    sequence.forEach(step => {
+                        if(!step.accents || step.accents.length !== step.beats) {
+                            step.accents = generateDefaultAccents(step.beats);
+                        }
+                    });
+                } catch(e) {}
+            }
+        }
+
+        function generateDefaultAccents(count) {
+            let arr = [];
+            for(let i=0; i<count; i++) {
+                if(i===0) arr.push(2); 
+                else if(count >= 4 && i === Math.floor(count/2)) arr.push(1); 
+                else arr.push(0); 
+            }
+            return arr;
+        }
+
+        // --- NAVIGATION LOGIC ---
+        function switchTab(mode) {
+            stopMetronome(); 
+            currentMode = mode;
+            
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+
+            if (mode === 'basic') {
+                basicPanel.classList.add('active');
+                document.querySelector('button[onclick="switchTab(\'basic\')"]').classList.add('active');
+            } else {
+                advPanel.classList.add('active');
+                document.querySelector('button[onclick="switchTab(\'advanced\')"]').classList.add('active');
+            }
+        }
+
+        // --- UI LOGIC: COUNT IN ---
+        function initCountInUI() {
+            countInCheck.checked = countInSettings.enabled;
+            ciBpm.value = countInSettings.bpm;
+            ciBeats.value = countInSettings.beats;
+            ciValue.value = countInSettings.value || 4;
+            ciBars.value = countInSettings.bars;
+            updateCountInDots();
+            updateCountInUIState();
+        }
+
+        function toggleCountIn() { saveCountIn(); }
+
+        function updateCountInUIState() {
+            if(countInSettings.enabled) {
+                countInBox.classList.remove('disabled');
+                document.getElementById('countInControls').style.opacity = "1";
+                document.getElementById('countInControls').style.pointerEvents = "auto";
+            } else {
+                countInBox.classList.add('disabled');
+                document.getElementById('countInControls').style.opacity = "0.3";
+                document.getElementById('countInControls').style.pointerEvents = "none";
+            }
+        }
+
+        function updateCountInDots() {
+            const beats = parseInt(ciBeats.value);
+            const oldAccents = countInSettings.accents;
+            let newAccents = [];
+            for(let i=0; i<beats; i++) {
+                if(i < oldAccents.length) newAccents.push(oldAccents[i]);
+                else if(i===0) newAccents.push(2);
+                else newAccents.push(0);
+            }
+            countInSettings.accents = newAccents;
+
+            ciAccentsContainer.innerHTML = '';
+            countInSettings.accents.forEach((level, i) => {
+                const d = document.createElement('div');
+                d.className = 'mini-dot';
+                d.dataset.level = level;
+                d.onclick = () => {
+                    countInSettings.accents[i] = (countInSettings.accents[i] + 1) % 3;
+                    d.dataset.level = countInSettings.accents[i];
+                    localStorage.setItem('mikeMetronomeCountIn', JSON.stringify(countInSettings));
+                };
+                ciAccentsContainer.appendChild(d);
+            });
+        }
+
+        // --- UI LOGIC: BASIC MODE ---
+        function updateBasicDots(count) {
+            count = parseInt(count);
+            let oldAccents = [...basicAccents];
+            basicAccents = [];
+            for (let i = 0; i < count; i++) {
+                let level = 0;
+                if (i < oldAccents.length) level = oldAccents[i];
+                else if (i === 0) level = 2; 
+                basicAccents.push(level);
+            }
+            renderBasicDotsUI();
+            saveBasicSettings();
+        }
+
+        function renderBasicDotsUI() {
+            beatContainer.innerHTML = '';
+            basicAccents.forEach((level, i) => {
+                const dot = document.createElement('div');
+                dot.className = 'beat-dot';
+                dot.dataset.index = i;
+                dot.dataset.level = level;
+                dot.addEventListener('click', () => {
+                    let newLevel = (parseInt(dot.dataset.level) + 1) % 3;
+                    dot.dataset.level = newLevel;
+                    basicAccents[i] = newLevel;
+                    saveBasicSettings();
+                });
+                beatContainer.appendChild(dot);
+            });
+        }
+
+        // --- UI LOGIC: ADVANCED STEPS ---
+        function renderStepList() {
+            const container = document.getElementById('stepListContainer');
+            container.innerHTML = '';
+            
+            sequence.forEach((step, index) => {
+                const el = document.createElement('div');
+                el.className = 'step-item';
+                el.id = `step-row-${index}`;
+                
+                if(!step.accents) step.accents = generateDefaultAccents(step.beats);
+                
+                el.innerHTML = `
+                    <div class="step-header">
+                        <span class="step-title">Step ${index + 1}</span>
+                        <button class="delete-btn" onclick="removeStep(${index})">×</button>
+                    </div>
+                    <div class="step-inputs">
+                        <div class="step-input-group">
+                            <label>BPM</label>
+                            <input type="number" value="${step.bpm}" onchange="updateStep(${index}, 'bpm', this.value)">
+                        </div>
+                        <div class="step-input-group">
+                            <label>Sig.</label>
+                            <div style="display:flex; gap:2px;">
+                                <input type="number" value="${step.beats}" onchange="updateStep(${index}, 'beats', this.value)">
+                                <select onchange="updateStep(${index}, 'value', this.value)">
+                                    <option value="4" ${step.value==4?'selected':''}>/4</option>
+                                    <option value="8" ${step.value==8?'selected':''}>/8</option>
+                                    <option value="2" ${step.value==2?'selected':''}>/2</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="step-input-group">
+                            <label>Bars</label>
+                            <input type="number" value="${step.bars}" onchange="updateStep(${index}, 'bars', this.value)">
+                        </div>
+                    </div>
+                    <label style="font-size:10px; color:#666;">Accents:</label>
+                    <div class="step-accents" id="step-accents-${index}"></div>
+                `;
+                container.appendChild(el);
+
+                const dotsContainer = document.getElementById(`step-accents-${index}`);
+                step.accents.forEach((level, beatIdx) => {
+                    const d = document.createElement('div');
+                    d.className = 'mini-dot';
+                    d.dataset.level = level;
+                    d.onclick = () => toggleStepAccent(index, beatIdx);
+                    dotsContainer.appendChild(d);
+                });
+            });
+        }
+
+        function toggleStepAccent(stepIdx, beatIdx) {
+            let current = sequence[stepIdx].accents[beatIdx];
+            sequence[stepIdx].accents[beatIdx] = (current + 1) % 3;
+            renderStepList();
+            saveSequence();
+        }
+
+        function addStep() {
+            sequence.push({ bpm: 100, beats: 4, value: 4, bars: 4, accents: [2,0,0,0] });
+            renderStepList();
+            saveSequence();
+        }
+
+        function removeStep(index) {
+            sequence.splice(index, 1);
+            renderStepList();
+            saveSequence();
+        }
+
+        function updateStep(index, field, value) {
+            value = parseInt(value);
+            sequence[index][field] = value;
+            
+            if(field === 'beats') {
+                const oldAccents = sequence[index].accents;
+                let newAccents = [];
+                for(let i=0; i<value; i++) {
+                    if(i < oldAccents.length) newAccents.push(oldAccents[i]);
+                    else if(i===0) newAccents.push(2);
+                    else newAccents.push(0);
+                }
+                sequence[index].accents = newAccents;
+                renderStepList(); 
+            }
+            saveSequence();
+        }
+
+        // --- AUDIO ENGINE ---
+        function playSound(freq, time) {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.type = 'square'; 
+            osc.frequency.value = freq;
+            
+            if(freq > 1000) gain.gain.value = 0.8; 
+            else if (freq > 800) gain.gain.value = 0.4; 
+            else gain.gain.value = 0.2; 
+
+            osc.start(time);
+            osc.stop(time + 0.05); 
+        }
+
+        function scheduler() {
+            const lookahead = 0.1; 
+            while (nextNoteTime < audioContext.currentTime + lookahead) {
+                if(!isRunning) return; 
+
+                if (currentMode === 'basic') {
+                    scheduleBasic();
+                } else {
+                    scheduleAdvanced();
+                }
+            }
+            if (isRunning) timerID = setTimeout(scheduler, 25);
+        }
+
+        function scheduleBasic() {
+            const level = basicAccents[currentBeatIndex];
+            let freq = 600; 
+            if (level === 2) freq = 1500;
+            if (level === 1) freq = 1000;
+            
+            playSound(freq, nextNoteTime);
+
+            const beatIndexForVisual = currentBeatIndex;
+            const timeForVisual = (nextNoteTime - audioContext.currentTime) * 1000;
+            setTimeout(() => {
+                document.querySelectorAll('.beat-dot').forEach(d => d.classList.remove('playing'));
+                const dot = beatContainer.children[beatIndexForVisual];
+                if(dot) dot.classList.add('playing');
+            }, timeForVisual);
+
+            const bpm = parseFloat(bpmInput.value);
+            const den = parseInt(beatValueInput.value);
+            const secondsPerBeat = 60.0 / (bpm * (den / 4));
+            
+            nextNoteTime += secondsPerBeat;
+            
+            currentBeatIndex++;
+            if (currentBeatIndex >= basicAccents.length) currentBeatIndex = 0;
+        }
+
+        function scheduleAdvanced() {
+            // PHASE 0: COUNT IN
+            if (playPhase === 0) {
+                const step = countInSettings;
+                
+                let level = step.accents[advBeatCounter];
+                let freq = 600;
+                if(level === 2) freq = 1500;
+                if(level === 1) freq = 1000;
+                playSound(freq, nextNoteTime);
+
+                const curBar = advBarCounter;
+                const timeForVisual = (nextNoteTime - audioContext.currentTime) * 1000;
+                setTimeout(() => {
+                    countInBox.classList.add('active');
+                    document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+                    
+                    advStepName.textContent = `Count-in`;
+                    advBarCountEl.textContent = `Bar ${curBar} / ${step.bars}`;
+                    if(freq === 1500) {
+                         advBarCountEl.style.color = "#03dac6";
+                         setTimeout(()=>advBarCountEl.style.color="#fff", 100);
+                    }
+                }, timeForVisual);
+
+                const secondsPerBeat = 60.0 / (step.bpm * (step.value / 4)); 
+                nextNoteTime += secondsPerBeat;
+
+                advBeatCounter++;
+                if(advBeatCounter >= step.beats) {
+                    advBeatCounter = 0;
+                    advBarCounter++;
+                    if(advBarCounter > step.bars) {
+                        playPhase = 1; 
+                        currentStepIndex = 0;
+                        advBarCounter = 1;
+                        advBeatCounter = 0;
+                    }
+                }
+                return;
+            }
+
+            // PHASE 1: SEQUENCE
+            if (currentStepIndex >= sequence.length) {
+                if(isRepeatEnabled) {
+                    playPhase = 1;
+                    currentStepIndex = 0;
+                    advBarCounter = 1;
+                    advBeatCounter = 0;
+                } else {
+                    stopMetronome();
+                    return;
+                }
+            }
+
+            if(sequence.length === 0) { stopMetronome(); return; }
+
+            const step = sequence[currentStepIndex];
+            
+            let accentLevel = 0;
+            if(step.accents && step.accents[advBeatCounter] !== undefined) {
+                accentLevel = step.accents[advBeatCounter];
+            }
+            
+            let freq = 600;
+            if (accentLevel === 2) freq = 1500;
+            if (accentLevel === 1) freq = 1000;
+
+            playSound(freq, nextNoteTime);
+
+            const currentStepIdxVis = currentStepIndex;
+            const currentBarVis = advBarCounter;
+            const timeForVisual = (nextNoteTime - audioContext.currentTime) * 1000;
+            
+            setTimeout(() => {
+                countInBox.classList.remove('active');
+                document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+                const activeRow = document.getElementById(`step-row-${currentStepIdxVis}`);
+                if(activeRow) activeRow.classList.add('active');
+
+                advStepName.textContent = `Step ${currentStepIdxVis + 1} / ${sequence.length}`;
+                advBarCountEl.textContent = `Bar ${currentBarVis} / ${step.bars}`;
+                
+                if (accentLevel === 2) {
+                    advBarCountEl.style.color = "#03dac6";
+                    setTimeout(()=>advBarCountEl.style.color="#fff", 100);
+                }
+            }, timeForVisual);
+
+            const secondsPerBeat = 60.0 / (step.bpm * (step.value / 4));
+            nextNoteTime += secondsPerBeat;
+
+            advBeatCounter++;
+            if (advBeatCounter >= step.beats) {
+                advBeatCounter = 0;
+                advBarCounter++;
+                if (advBarCounter > step.bars) {
+                    currentStepIndex++;
+                    advBarCounter = 1;
+                    advBeatCounter = 0;
+                }
+            }
+        }
+
+        // --- START / STOP ---
+        function stopMetronome() {
+            clearTimeout(timerID);
+            isRunning = false;
+            
+            mainBtn.textContent = "START";
+            mainBtn.classList.remove('stop');
+            document.querySelectorAll('.beat-dot').forEach(d => d.classList.remove('playing'));
+            
+            advStatus.style.display = 'none';
+            document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+            countInBox.classList.remove('active');
+        }
+
+        mainBtn.addEventListener('click', () => {
+            if (isRunning) {
+                stopMetronome();
+            } else {
+                if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioContext.state === 'suspended') audioContext.resume();
+
+                currentBeatIndex = 0;
+                
+                if(currentMode === 'advanced') {
+                    advStatus.style.display = 'block';
+                    if(countInSettings.enabled) {
+                        playPhase = 0; 
+                    } else {
+                        playPhase = 1; 
+                    }
+                    currentStepIndex = 0;
+                    advBarCounter = 1;
+                    advBeatCounter = 0;
+                }
+
+                nextNoteTime = audioContext.currentTime + 0.05;
+                isRunning = true;
+                mainBtn.textContent = "STOP";
+                mainBtn.classList.add('stop');
+                scheduler();
+            }
+        });
+
+    </script>
+</body>
+</html>
