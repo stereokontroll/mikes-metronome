@@ -6,12 +6,14 @@
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "minimal-ui", "standalone"],
   "background_color": "#121212",
   "theme_color": "#1e1e1e",
   "orientation": "portrait",
   "lang": "en-US",
   "dir": "ltr",
   "categories": ["music", "utilities", "education"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "icon-192.png",
@@ -36,6 +38,18 @@
       "sizes": "423x924",
       "type": "image/png",
       "form_factor": "narrow"
+    },
+    {
+      "src": "screen3.png",
+      "sizes": "1173x814",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screen4.png",
+      "sizes": "1176x816",
+      "type": "image/png",
+      "form_factor": "wide"
     }
   ]
 }
