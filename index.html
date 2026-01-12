@@ -970,13 +970,47 @@
 
     </script>
     <script>
-      if ("serviceWorker" in navigator) {
+    if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
-          navigator.serviceWorker.register("sw.js").then(() => {
-            console.log("Service Worker Registered");
-          });
+            navigator.serviceWorker.register("./sw.js").then((registration) => {
+                console.log("Service Worker geregistreerd met scope:", registration.scope);
+
+                // Checken of er een update klaarstaat (waiting)
+                if (registration.waiting) {
+                    notifyUserOfUpdate(registration.waiting);
+                }
+
+                // Luisteren naar nieuwe updates terwijl de app open staat
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        // Is de nieuwe worker geïnstalleerd?
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            notifyUserOfUpdate(newWorker);
+                        }
+                    });
+                });
+            }).catch((err) => {
+                console.log("Service Worker registratie mislukt:", err);
+            });
         });
-      }
-    </script>
+
+        // Functie om de gebruiker te vragen te updaten
+        function notifyUserOfUpdate(worker) {
+            if (confirm("A new version of the Mike's Metronome app is available. Do you want to reload now?")) {
+                // Stuur bericht naar de nieuwe SW om 'skipWaiting' te doen (activeer direct)
+                worker.postMessage({ action: 'skipWaiting' });
+            }
+        }
+
+        // Luister naar de controller change (zodra de nieuwe SW actief wordt, herlaad pagina)
+        let refreshing;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            window.location.reload();
+            refreshing = true;
+        });
+    }
+</script>
 </body>
 </html>
