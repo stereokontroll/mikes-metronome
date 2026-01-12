@@ -39,3 +39,10 @@ self.addEventListener("fetch", (e) => {
     })
   );
 });
+
+// 4. Luister naar bericht van de pagina om direct te activeren (skipWaiting)
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.action === "skipWaiting") {
+    self.skipWaiting();
+  }
+});
