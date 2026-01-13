@@ -622,7 +622,7 @@
                 if (match && match[1]) {
                     // Strip 'metronome-' prefix
                     const v = match[1].replace('metronome-', '');
-                    document.getElementById('appVersion').textContent = `v${v}`;
+                    document.getElementById('appVersion').textContent = `${v}`;
                 }
             } catch (e) {
                 console.log("Could not fetch version");
@@ -1270,3 +1270,4 @@
 </script>
 </body>
 </html>
+
