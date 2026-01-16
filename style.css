@@ -13,6 +13,20 @@ body {
     overflow: hidden;
 }
 
+/* --- FLASH OVERLAY (NEW) --- */
+#flashOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: overlay;
+}
+
 /* --- HAMBURGER MENU STYLES --- */
 .header-bar {
     width: 100%;
@@ -244,16 +258,6 @@ input:focus { border-color: #03dac6; }
 .step-input-group { flex: 1; }
 .step-input-group label { font-size: 10px; margin-bottom: 2px;}
 .step-input-group input, .step-input-group select { font-size: 14px; padding: 5px; height: 35px; }
-
-.step-accents {
-    display: flex;
-    gap: 10px;               /* RUIMTE VERGROOT: Was 5px */
-    flex-wrap: wrap;
-    justify-content: center; /* NIEUW: Centreert de bolletjes horizontaal */
-    padding-top: 10px;       /* Iets meer ruimte boven de bolletjes */
-    border-top: 1px solid #333;
-    margin-top: 8px;         /* Wat extra afstand tot de inputs erboven */
-}
 
 /* Container voor de bolletjes: centreren en meer ruimte */
 .step-accents { 
