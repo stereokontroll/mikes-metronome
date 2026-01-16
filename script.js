@@ -163,17 +163,30 @@ async function loadVersionFromSW() {
 
 // --- LOCAL STORAGE ---
 function saveBasicSettings() {
+    // --- VALIDATIE START ---
+    let val = parseInt(bpmInput.value);
+    if (val < 30) val = 30;
+    if (val > 320) val = 320;
+    bpmInput.value = val; // Zet het gecorrigeerde getal terug in het scherm
+    // --- VALIDATIE EINDE ---
+
     localStorage.setItem('mikeMetronomeBasicBpm', bpmInput.value);
     localStorage.setItem('mikeMetronomeBasicCount', beatCountInput.value);
     localStorage.setItem('mikeMetronomeBasicValue', beatValueInput.value);
     localStorage.setItem('mikeMetronomeBasicAccents', JSON.stringify(basicAccents));
 }
-
 function saveSequence() {
     localStorage.setItem('mikeMetronomeSequence', JSON.stringify(sequence));
 }
 
 function saveCountIn() {
+    // --- VALIDATIE START ---
+    let val = parseInt(ciBpm.value);
+    if (val < 30) val = 30;
+    if (val > 320) val = 320;
+    ciBpm.value = val;
+    // --- VALIDATIE EINDE ---
+
     countInSettings.enabled = countInCheck.checked;
     countInSettings.bpm = parseInt(ciBpm.value);
     countInSettings.beats = parseInt(ciBeats.value);
@@ -515,6 +528,14 @@ function updateStep(index, field, value) {
         sequence[index][field] = value;
     } else {
         value = parseInt(value);
+        
+        // --- VALIDATIE START ---
+        if (field === 'bpm') {
+            if (value < 30) value = 30;
+            if (value > 320) value = 320;
+        }
+        // --- VALIDATIE EINDE ---
+
         sequence[index][field] = value;
     }
     
@@ -527,9 +548,11 @@ function updateStep(index, field, value) {
             else newAccents.push(0);
         }
         sequence[index].accents = newAccents;
-        renderStepList(); 
     }
+    
+    renderStepList(); // Dit zorgt dat het foute getal op het scherm ook weer 320 wordt
     saveSequence();
+}
 }
 
 // --- AUDIO ENGINE ---
