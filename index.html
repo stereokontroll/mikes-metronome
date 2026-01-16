@@ -348,6 +348,18 @@
         <button class="close-menu-btn" onclick="toggleMenu()">×</button>
         <div class="menu-header">Menu</div>
         
+        <button class="accordion-btn">Settings</button>
+        <div class="accordion-panel">
+            <div style="padding: 15px 5px;">
+                <label style="color:#aaa; font-size:14px; margin-bottom:8px; display:block;">Sound Type</label>
+                <select id="soundTypeSelect" onchange="saveSoundSetting()" style="text-align:left;">
+                    <option value="high">Sharp (Default)</option>
+                    <option value="wood">Wood (Click)</option>
+                    <option value="soft">Soft (Sine)</option>
+                </select>
+            </div>
+        </div>
+
         <button class="accordion-btn">Saved Songs</button>
         <div class="accordion-panel">
             <div id="savedSongsList">
@@ -506,6 +518,9 @@
         let currentStepIndex = 0; 
         let advBarCounter = 1; 
         let advBeatCounter = 0; 
+        
+        // Settings
+        const soundTypeSelect = document.getElementById('soundTypeSelect');
 
         // --- DOM ELEMENTS ---
         const mainBtn = document.getElementById('mainActionBtn');
@@ -636,6 +651,15 @@
             localStorage.setItem('mikeMetronomeBasicValue', beatValueInput.value);
             localStorage.setItem('mikeMetronomeBasicAccents', JSON.stringify(basicAccents));
         }
+        
+        function saveSoundSetting() {
+            localStorage.setItem('mikeMetronomeSoundType', soundTypeSelect.value);
+            // Optional: Preview sound when changing setting
+            if(audioContext && !isRunning && audioContext.state === 'running') {
+                // Play a standard beat to preview
+                playSound(1000, audioContext.currentTime);
+            }
+        }
 
         function saveSequence() {
             localStorage.setItem('mikeMetronomeSequence', JSON.stringify(sequence));
@@ -661,6 +685,10 @@
             if(localStorage.getItem('mikeMetronomeBasicCount')) beatCountInput.value = localStorage.getItem('mikeMetronomeBasicCount');
             if(localStorage.getItem('mikeMetronomeBasicValue')) beatValueInput.value = localStorage.getItem('mikeMetronomeBasicValue');
             
+            if(localStorage.getItem('mikeMetronomeSoundType')) {
+                soundTypeSelect.value = localStorage.getItem('mikeMetronomeSoundType');
+            }
+
             if(localStorage.getItem('mikeMetronomeRepeat') === 'true') {
                 isRepeatEnabled = true;
                 repeatCheckbox.checked = true;
@@ -731,11 +759,14 @@
                 localStorage.setItem('mikeMetronomeSavedSongs', JSON.stringify(savedSequences));
                 renderSavedSongsMenu();
                 
-                const acc = document.getElementsByClassName("accordion-btn");
-                if(acc[0] && !acc[0].classList.contains("active")) {
-                   acc[0].click(); 
+                // Open saved songs if not open
+                const acc = document.querySelectorAll(".accordion-btn");
+                // Assuming saved songs is the second button (index 1)
+                if(acc[1] && !acc[1].classList.contains("active")) {
+                   acc[1].click(); 
                 }
-                toggleMenu(); 
+                // Don't close menu immediately so user can see it
+                // toggleMenu(); 
             }
         }
         
@@ -786,10 +817,10 @@
             });
             
             // Recalculate if open
-            const acc = document.getElementsByClassName("accordion-btn")[0];
-            const panel = acc.nextElementSibling;
-            if (acc.classList.contains("active")) {
-                // Buffer added here as well
+            // Index 1 is saved songs now (Index 0 is Settings)
+            const acc = document.getElementsByClassName("accordion-btn")[1];
+            if (acc && acc.classList.contains("active")) {
+                const panel = acc.nextElementSibling;
                 panel.style.maxHeight = panel.scrollHeight + "px";
             }
         }
@@ -1004,15 +1035,56 @@
             const gain = audioContext.createGain();
             osc.connect(gain);
             gain.connect(audioContext.destination);
-            osc.type = 'square'; 
-            osc.frequency.value = freq;
-            
-            if(freq > 1000) gain.gain.value = 0.8; 
-            else if (freq > 800) gain.gain.value = 0.4; 
-            else gain.gain.value = 0.2; 
 
-            osc.start(time);
-            osc.stop(time + 0.05); 
+            const type = soundTypeSelect.value;
+            
+            // Map the input frequency (which represents accent level) to our desired sound
+            // Logic: freq > 1000 (Accent 2, High), freq > 800 (Accent 1, Mid), else (Accent 0, Low)
+
+            if (type === 'wood') {
+                // OPTION 2: WOOD / CLICK
+                osc.type = 'triangle';
+                
+                // Lower pitch mapping
+                if (freq > 1000) osc.frequency.value = 800;      // High click
+                else if (freq > 800) osc.frequency.value = 600;  // Mid click
+                else osc.frequency.value = 400;                  // Low click
+
+                // Very short envelope for percussive effect
+                gain.gain.setValueAtTime(1.0, time);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
+                
+                osc.start(time);
+                osc.stop(time + 0.05);
+
+            } else if (type === 'soft') {
+                // OPTION 3: SOFT / SINE
+                osc.type = 'sine';
+                
+                // Harmonious A-minor mapping
+                if (freq > 1000) osc.frequency.value = 880;      // A5 (High)
+                else if (freq > 800) osc.frequency.value = 440;  // A4 (Mid)
+                else osc.frequency.value = 220;                  // A3 (Low)
+
+                // Softer attack and release
+                gain.gain.setValueAtTime(0.8, time);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
+                
+                osc.start(time);
+                osc.stop(time + 0.15);
+
+            } else {
+                // OPTION 1: SHARP (DEFAULT) - Original Logic
+                osc.type = 'square'; 
+                osc.frequency.value = freq;
+                
+                if(freq > 1000) gain.gain.value = 0.8; 
+                else if (freq > 800) gain.gain.value = 0.4; 
+                else gain.gain.value = 0.2; 
+
+                osc.start(time);
+                osc.stop(time + 0.05); 
+            }
         }
 
         function scheduler() {
@@ -1270,4 +1342,3 @@
 </script>
 </body>
 </html>
-
