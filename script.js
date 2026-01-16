@@ -175,6 +175,8 @@ function saveBasicSettings() {
     localStorage.setItem('mikeMetronomeBasicValue', beatValueInput.value);
     localStorage.setItem('mikeMetronomeBasicAccents', JSON.stringify(basicAccents));
 }
+
+// DEZE FUNCTIE STOND VERKEERD (IN DE VORIGE)
 function saveSequence() {
     localStorage.setItem('mikeMetronomeSequence', JSON.stringify(sequence));
 }
@@ -552,7 +554,6 @@ function updateStep(index, field, value) {
     
     renderStepList(); // Dit zorgt dat het foute getal op het scherm ook weer 320 wordt
     saveSequence();
-}
 }
 
 // --- AUDIO ENGINE ---
