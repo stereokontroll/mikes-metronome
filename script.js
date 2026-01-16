@@ -466,7 +466,7 @@ function renderStepList() {
             <div class="step-inputs">
                 <div class="step-input-group">
                     <label>BPM</label>
-                    <input type="number" value="${step.bpm}" onchange="updateStep(${index}, 'bpm', this.value)">
+                    <input type="number" value="${step.bpm}" min="30" max="320" onchange="updateStep(${index}, 'bpm', this.value)">
                 </div>
                 <div class="step-input-group">
                     <label>Sig.</label>
