@@ -333,3 +333,27 @@ button#mainActionBtn {
     width: 100%; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 button#mainActionBtn.stop { background-color: #ff5252; color: white; }
+
+/* --- TAP TEMPO BUTTON --- */
+.tap-btn {
+    background: transparent;
+    border: 2px solid #444;
+    color: #888;
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: all 0.1s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tap-btn:active, .tap-btn.active {
+    border-color: #03dac6;
+    color: #fff;
+    background-color: rgba(3, 218, 198, 0.1);
+    transform: scale(0.98);
+}
