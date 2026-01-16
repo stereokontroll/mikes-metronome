@@ -245,16 +245,47 @@ input:focus { border-color: #03dac6; }
 .step-input-group label { font-size: 10px; margin-bottom: 2px;}
 .step-input-group input, .step-input-group select { font-size: 14px; padding: 5px; height: 35px; }
 
-.step-accents { display: flex; gap: 5px; flex-wrap: wrap; padding-top: 5px; border-top: 1px solid #333; }
-
-.mini-dot { 
-    width: 15px; height: 15px; border-radius: 50%; border: 1px solid #555; background: #333; cursor: pointer; 
-    transition: all 0.1s; 
+.step-accents {
+    display: flex;
+    gap: 10px;               /* RUIMTE VERGROOT: Was 5px */
+    flex-wrap: wrap;
+    justify-content: center; /* NIEUW: Centreert de bolletjes horizontaal */
+    padding-top: 10px;       /* Iets meer ruimte boven de bolletjes */
+    border-top: 1px solid #333;
+    margin-top: 8px;         /* Wat extra afstand tot de inputs erboven */
 }
+
+/* Container voor de bolletjes: centreren en meer ruimte */
+.step-accents { 
+    display: flex; 
+    gap: 10px;               /* Meer tussenruimte (was 5px) */
+    flex-wrap: wrap; 
+    justify-content: center; /* Centreert de bolletjes in het midden */
+    padding-top: 10px; 
+    border-top: 1px solid #333; 
+    margin-top: 8px;
+}
+
+/* De bolletjes zelf: groter en makkelijker te raken */
+.mini-dot { 
+    width: 22px;             /* Groter (was 15px) */
+    height: 22px;            /* Groter (was 15px) */
+    border-radius: 50%; 
+    border: 1px solid #555; 
+    background: #333; 
+    cursor: pointer; 
+    transition: all 0.1s; 
+    flex-shrink: 0;          /* Zorgt dat ze niet 'geplet' worden op kleine schermen */
+}
+
+/* Kleuren en speel-status blijven hetzelfde */
 .mini-dot[data-level="1"] { background-color: #03dac6; border-color: #03dac6; }
 .mini-dot[data-level="2"] { background-color: #ff5252; border-color: #ff5252; }
 .mini-dot.playing {
-    transform: scale(1.5); box-shadow: 0 0 10px white; border-color: #fff; z-index: 10;
+    transform: scale(1.3);   /* Iets subtielere schaal (was 1.5) omdat ze nu al groter zijn */
+    box-shadow: 0 0 10px white; 
+    border-color: #fff; 
+    z-index: 10;
 }
 
 .add-btn {
