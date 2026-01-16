@@ -27,7 +27,7 @@
         <button class="close-menu-btn" onclick="toggleMenu()">×</button>
         <div class="menu-header">Menu</div>
         
-        <button class="accordion-btn">Saved Songs</button>
+        <button class="accordion-btn">📂 Saved Songs</button>
         <div class="accordion-panel">
             <div id="savedSongsList">
                 <p style="font-size: 12px; color:#888; text-align:center; padding: 10px 0;">No songs saved yet</p>
@@ -50,7 +50,7 @@
             </label>
         </div>
 
-        <button class="accordion-btn">About</button>
+        <button class="accordion-btn">ℹ️ About</button>
         <div class="accordion-panel">
             <p class="menu-text">
                 Hi, I'm Mike!<br>I'm a drummer myself.<br>I originally built this app to help my son practice for his trumpet exam, but I decided to share it with the world.
@@ -444,6 +444,7 @@
                 renderSavedSongsMenu();
                 
                 const acc = document.getElementsByClassName("accordion-btn");
+                // Open saved songs (index 0) if not open
                 if(acc[0] && !acc[0].classList.contains("active")) {
                    acc[0].click(); 
                 }
@@ -497,9 +498,11 @@
                 savedSongsList.appendChild(div);
             });
             
-            const acc = document.getElementsByClassName("accordion-btn")[0];
-            const panel = acc.nextElementSibling;
-            if (acc.classList.contains("active")) {
+            // Recalculate if open
+            const acc = document.getElementsByClassName("accordion-btn");
+            // Assuming saved songs is index 0
+            if (acc[0] && acc[0].classList.contains("active")) {
+                const panel = acc[0].nextElementSibling;
                 panel.style.maxHeight = panel.scrollHeight + "px";
             }
         }
