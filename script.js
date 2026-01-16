@@ -853,3 +853,70 @@ if ("serviceWorker" in navigator) {
         refreshing = true;
     });
 }
+
+// --- TAP TEMPO LOGIC ---
+let tapTimes = [];
+let tapResetTimer = null;
+
+function handleTap() {
+    const btn = document.getElementById('tapBtn');
+    const now = Date.now();
+
+    // Visuele feedback (flits)
+    btn.classList.add('active');
+    setTimeout(() => btn.classList.remove('active'), 100);
+
+    // Reset als er langer dan 2 seconden niet getikt is
+    if (tapTimes.length > 0 && now - tapTimes[tapTimes.length - 1] > 2000) {
+        tapTimes = [];
+    }
+
+    tapTimes.push(now);
+
+    // Reset timer vernieuwen (om tekst terug te zetten na 2 sec stilte)
+    clearTimeout(tapResetTimer);
+    tapResetTimer = setTimeout(() => {
+        tapTimes = [];
+        btn.textContent = "TAP TEMPO";
+        btn.style.color = "#888";
+        btn.style.borderColor = "#444";
+    }, 2000);
+
+    // We hebben minstens 5 taps nodig (dus 4 intervallen)
+    if (tapTimes.length < 5) {
+        btn.textContent = `Tapping... (${tapTimes.length}/5)`;
+        btn.style.color = "#03dac6";
+        btn.style.borderColor = "#03dac6";
+        return; 
+    }
+
+    // Bereken gemiddelde BPM over de laatste 8 taps (voor stabiliteit)
+    // We gebruiken max 8 taps om te voorkomen dat oude taps het gemiddelde beïnvloeden als je van tempo wisselt
+    if (tapTimes.length > 8) {
+        tapTimes.shift();
+    }
+
+    let intervals = [];
+    for (let i = 1; i < tapTimes.length; i++) {
+        intervals.push(tapTimes[i] - tapTimes[i-1]);
+    }
+
+    // Gemiddelde interval in milliseconden
+    let avgMs = intervals.reduce((a, b) => a + b) / intervals.length;
+    
+    // Convert naar BPM (60000ms in een minuut)
+    let bpm = Math.round(60000 / avgMs);
+
+    // Limits toepassen (30 - 320)
+    if (bpm < 30) bpm = 30;
+    if (bpm > 320) bpm = 320;
+
+    // Update UI en Save
+    bpmInput.value = bpm;
+    saveBasicSettings();
+    
+    // Toon resultaat op knop
+    btn.textContent = `BPM: ${bpm}`;
+    btn.style.color = "#fff";
+    btn.style.borderColor = "#fff";
+}
