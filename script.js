@@ -68,7 +68,7 @@ const beatValueInput = document.getElementById('beatValueInput');
 const beatContainer = document.getElementById('beatContainer');
 const repeatCheckbox = document.getElementById('repeatCheckbox');
 
-// --- TEMPO DROPDOWN (MOVED TO TOP) ---
+// --- TEMPO DROPDOWN ---
 const tempoSelect = document.getElementById('tempoSelect'); 
 
 // Inputs Count-in
@@ -189,7 +189,7 @@ function updateDropdownVisuals() {
 // 6. Local Storage & Settings
 function saveBasicSettings() {
     let val = parseInt(bpmInput.value);
-    if (isNaN(val)) val = 100; // Veiligheid voor lege input
+    if (isNaN(val)) val = 100;
     if (val < 30) val = 30;
     if (val > 320) val = 320;
     bpmInput.value = val;
@@ -199,7 +199,6 @@ function saveBasicSettings() {
     localStorage.setItem('mikeMetronomeBasicValue', beatValueInput.value);
     localStorage.setItem('mikeMetronomeBasicAccents', JSON.stringify(basicAccents));
 
-    // Update de dropdown direct
     updateDropdownVisuals();
 }
 
@@ -228,10 +227,21 @@ function saveRepeatSetting() {
 }
 
 function loadSettings() {
+    // 1. Laad basis waarden
     if(localStorage.getItem('mikeMetronomeBasicBpm')) bpmInput.value = localStorage.getItem('mikeMetronomeBasicBpm');
     if(localStorage.getItem('mikeMetronomeBasicCount')) beatCountInput.value = localStorage.getItem('mikeMetronomeBasicCount');
     if(localStorage.getItem('mikeMetronomeBasicValue')) beatValueInput.value = localStorage.getItem('mikeMetronomeBasicValue');
     
+    // 2. Laad Accenten
+    const savedBasicAccents = localStorage.getItem('mikeMetronomeBasicAccents');
+    if(savedBasicAccents) {
+        basicAccents = JSON.parse(savedBasicAccents);
+        renderBasicDotsUI(); 
+    } else {
+        // Fallback als er geen save is
+        updateBasicDots(parseInt(beatCountInput.value));
+    }
+
     if(localStorage.getItem('mikeMetronomeRepeat') === 'true') {
         isRepeatEnabled = true;
         repeatCheckbox.checked = true;
@@ -269,6 +279,13 @@ function loadSettings() {
     const savedSongsStore = localStorage.getItem('mikeMetronomeSavedSongs');
     if(savedSongsStore) {
         try { savedSequences = JSON.parse(savedSongsStore); } catch(e) { savedSequences = []; }
+    }
+
+    // Als sequence leeg is, maak default
+    if(sequence.length === 0) {
+        sequence = [
+            { name: "", bpm: 100, beats: 4, value: 4, bars: 4, accents: [2,0,0,0] }
+        ];
     }
     
     updateDropdownVisuals();
@@ -869,19 +886,7 @@ function handleTap() {
 }
 
 
-/* --- INITIALIZATION EXECUTION (MOVED TO BOTTOM) --- */
-if(sequence.length === 0) {
-    sequence = [
-        { name: "", bpm: 100, beats: 4, value: 4, bars: 4, accents: [2,0,0,0] }
-    ];
-}
-
-updateBasicDots(parseInt(beatCountInput.value));
-const savedBasicAccents = localStorage.getItem('mikeMetronomeBasicAccents');
-if(savedBasicAccents) {
-    basicAccents = JSON.parse(savedBasicAccents);
-    renderBasicDotsUI(); 
-}
+/* --- INITIALIZATION EXECUTION (CLEANED UP) --- */
 
 // Service Worker Logic
 if ("serviceWorker" in navigator) {
@@ -920,7 +925,7 @@ if ("serviceWorker" in navigator) {
     });
 }
 
-// Start de App (Deze volgorde is nu veilig)
+// Start de App (Definitieve Veilige Volgorde)
 initTempoDropdown(); 
 loadSettings(); 
 initAccordionMenu();
