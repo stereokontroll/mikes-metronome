@@ -174,6 +174,9 @@ function saveBasicSettings() {
     localStorage.setItem('mikeMetronomeBasicCount', beatCountInput.value);
     localStorage.setItem('mikeMetronomeBasicValue', beatValueInput.value);
     localStorage.setItem('mikeMetronomeBasicAccents', JSON.stringify(basicAccents));
+
+    // --- Update de Italiaanse term ---
+    updateDropdownVisuals();
 }
 
 // DEZE FUNCTIE STOND VERKEERD (IN DE VORIGE)
@@ -248,6 +251,9 @@ function loadSettings() {
     if(savedSongsStore) {
         try { savedSequences = JSON.parse(savedSongsStore); } catch(e) { savedSequences = []; }
     }
+    
+    // --- Update de Italiaanse term ---
+    updateDropdownVisuals();
 }
 
 function generateDefaultAccents(count) {
@@ -921,3 +927,56 @@ function handleTap() {
     btn.style.color = "#fff";
     btn.style.borderColor = "#fff";
 }
+
+/* --- ITALIAN TEMPO MARKINGS LOGIC --- */
+
+// 1. De Definities
+const tempoMarkings = [
+    { name: "Largo",       min: 30,  max: 60,  default: 50 },
+    { name: "Adagio",      min: 60,  max: 76,  default: 70 },
+    { name: "Andante",     min: 76,  max: 108, default: 90 },
+    { name: "Moderato",    min: 108, max: 120, default: 110 },
+    { name: "Allegro",     min: 120, max: 156, default: 130 },
+    { name: "Vivace",      min: 156, max: 176, default: 160 },
+    { name: "Presto",      min: 176, max: 200, default: 180 },
+    { name: "Prestissimo", min: 200, max: 321, default: 210 } // max 321 om 320 mee te pakken
+];
+
+const tempoSelect = document.getElementById('tempoSelect');
+
+// 2. Initialisatie: Vul de dropdown
+function initTempoDropdown() {
+    tempoSelect.innerHTML = ""; // Leegmaken voor zekerheid
+    tempoMarkings.forEach(t => {
+        const option = document.createElement('option');
+        option.value = t.name;
+        option.text = t.name;
+        tempoSelect.appendChild(option);
+    });
+}
+
+// 3. Functie: Als gebruiker een naam kiest uit de lijst
+function changeTempoFromDropdown() {
+    const selectedName = tempoSelect.value;
+    const match = tempoMarkings.find(t => t.name === selectedName);
+    
+    if (match) {
+        bpmInput.value = match.default;
+        saveBasicSettings(); // Slaat op en update alles
+    }
+}
+
+// 4. Functie: Update de dropdown op basis van het huidige BPM getal
+function updateDropdownVisuals() {
+    const currentBpm = parseInt(bpmInput.value);
+    
+    // Zoek in welk bereik we zitten
+    const match = tempoMarkings.find(t => currentBpm >= t.min && currentBpm < t.max);
+    
+    if (match) {
+        tempoSelect.value = match.name;
+    }
+}
+
+// Roep de init aan bij het laden van het script
+initTempoDropdown();
