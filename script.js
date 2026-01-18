@@ -33,7 +33,7 @@ let advBeatCounter = 0;
 let tapTimes = [];
 let tapResetTimer = null;
 
-// --- ITALIAN TEMPO DEFINITIONS (MOVED TO TOP) ---
+// --- ITALIAN TEMPO DEFINITIONS ---
 const tempoMarkings = [
     { name: "Largo",       min: 30,  max: 60,  default: 50 },
     { name: "Adagio",      min: 60,  max: 76,  default: 70 },
@@ -156,8 +156,10 @@ async function loadVersionFromSW() {
     }
 }
 
-// 5. Helper Functions for Tempo Dropdown
+// 5. Helper Functions for Tempo Dropdown (WITH SAFETY CHECKS)
 function initTempoDropdown() {
+    if (!tempoSelect) return; // VEILIGHEIDSCHECK: Stop als dropdown nog niet bestaat
+    
     tempoSelect.innerHTML = ""; 
     tempoMarkings.forEach(t => {
         const option = document.createElement('option');
@@ -168,6 +170,8 @@ function initTempoDropdown() {
 }
 
 function changeTempoFromDropdown() {
+    if (!tempoSelect) return; // VEILIGHEIDSCHECK
+
     const selectedName = tempoSelect.value;
     const match = tempoMarkings.find(t => t.name === selectedName);
     
@@ -178,6 +182,8 @@ function changeTempoFromDropdown() {
 }
 
 function updateDropdownVisuals() {
+    if (!tempoSelect) return; // VEILIGHEIDSCHECK
+
     const currentBpm = parseInt(bpmInput.value);
     const match = tempoMarkings.find(t => currentBpm >= t.min && currentBpm < t.max);
     
@@ -227,21 +233,10 @@ function saveRepeatSetting() {
 }
 
 function loadSettings() {
-    // 1. Laad basis waarden
     if(localStorage.getItem('mikeMetronomeBasicBpm')) bpmInput.value = localStorage.getItem('mikeMetronomeBasicBpm');
     if(localStorage.getItem('mikeMetronomeBasicCount')) beatCountInput.value = localStorage.getItem('mikeMetronomeBasicCount');
     if(localStorage.getItem('mikeMetronomeBasicValue')) beatValueInput.value = localStorage.getItem('mikeMetronomeBasicValue');
     
-    // 2. Laad Accenten
-    const savedBasicAccents = localStorage.getItem('mikeMetronomeBasicAccents');
-    if(savedBasicAccents) {
-        basicAccents = JSON.parse(savedBasicAccents);
-        renderBasicDotsUI(); 
-    } else {
-        // Fallback als er geen save is
-        updateBasicDots(parseInt(beatCountInput.value));
-    }
-
     if(localStorage.getItem('mikeMetronomeRepeat') === 'true') {
         isRepeatEnabled = true;
         repeatCheckbox.checked = true;
@@ -280,14 +275,23 @@ function loadSettings() {
     if(savedSongsStore) {
         try { savedSequences = JSON.parse(savedSongsStore); } catch(e) { savedSequences = []; }
     }
+    
+    // Fallback voor accenten
+    const savedBasicAccents = localStorage.getItem('mikeMetronomeBasicAccents');
+    if(savedBasicAccents) {
+        basicAccents = JSON.parse(savedBasicAccents);
+        renderBasicDotsUI(); 
+    } else {
+        updateBasicDots(parseInt(beatCountInput.value));
+    }
 
-    // Als sequence leeg is, maak default
+    // Default sequence indien leeg
     if(sequence.length === 0) {
         sequence = [
             { name: "", bpm: 100, beats: 4, value: 4, bars: 4, accents: [2,0,0,0] }
         ];
     }
-    
+
     updateDropdownVisuals();
 }
 
@@ -885,8 +889,26 @@ function handleTap() {
     btn.style.borderColor = "#fff";
 }
 
+// 15. START STOP METRONOME FUNCTION (MOVED TO GLOBAL SCOPE for SAFETY)
+function stopMetronome() {
+    clearTimeout(timerID);
+    isRunning = false;
+    
+    mainBtn.textContent = "START";
+    mainBtn.classList.remove('stop');
+    document.querySelectorAll('.beat-dot').forEach(d => d.classList.remove('playing'));
+    document.querySelectorAll('.mini-dot').forEach(d => d.classList.remove('playing'));
+    
+    advStatus.style.display = 'none';
+    document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+    
+    if(countInBox) countInBox.classList.remove('active');
 
-/* --- INITIALIZATION EXECUTION (CLEANED UP) --- */
+    releaseWakeLock();
+}
+
+
+/* --- INITIALIZATION EXECUTION (CLEANED UP & SAFE) --- */
 
 // Service Worker Logic
 if ("serviceWorker" in navigator) {
