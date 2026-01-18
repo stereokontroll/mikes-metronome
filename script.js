@@ -33,7 +33,7 @@ let advBeatCounter = 0;
 let tapTimes = [];
 let tapResetTimer = null;
 
-// Italian Tempo Markings Definitions
+// --- ITALIAN TEMPO DEFINITIONS (MOVED TO TOP) ---
 const tempoMarkings = [
     { name: "Largo",       min: 30,  max: 60,  default: 50 },
     { name: "Adagio",      min: 60,  max: 76,  default: 70 },
@@ -67,7 +67,9 @@ const beatCountInput = document.getElementById('beatCountInput');
 const beatValueInput = document.getElementById('beatValueInput');
 const beatContainer = document.getElementById('beatContainer');
 const repeatCheckbox = document.getElementById('repeatCheckbox');
-const tempoSelect = document.getElementById('tempoSelect'); // De dropdown
+
+// --- TEMPO DROPDOWN (MOVED TO TOP) ---
+const tempoSelect = document.getElementById('tempoSelect'); 
 
 // Inputs Count-in
 const countInBox = document.getElementById('countInBox');
@@ -154,10 +156,40 @@ async function loadVersionFromSW() {
     }
 }
 
-// 5. Local Storage & Settings
+// 5. Helper Functions for Tempo Dropdown
+function initTempoDropdown() {
+    tempoSelect.innerHTML = ""; 
+    tempoMarkings.forEach(t => {
+        const option = document.createElement('option');
+        option.value = t.name;
+        option.text = t.name;
+        tempoSelect.appendChild(option);
+    });
+}
+
+function changeTempoFromDropdown() {
+    const selectedName = tempoSelect.value;
+    const match = tempoMarkings.find(t => t.name === selectedName);
+    
+    if (match) {
+        bpmInput.value = match.default;
+        saveBasicSettings(); 
+    }
+}
+
+function updateDropdownVisuals() {
+    const currentBpm = parseInt(bpmInput.value);
+    const match = tempoMarkings.find(t => currentBpm >= t.min && currentBpm < t.max);
+    
+    if (match) {
+        tempoSelect.value = match.name;
+    }
+}
+
+// 6. Local Storage & Settings
 function saveBasicSettings() {
-    // Validatie
     let val = parseInt(bpmInput.value);
+    if (isNaN(val)) val = 100; // Veiligheid voor lege input
     if (val < 30) val = 30;
     if (val > 320) val = 320;
     bpmInput.value = val;
@@ -167,7 +199,7 @@ function saveBasicSettings() {
     localStorage.setItem('mikeMetronomeBasicValue', beatValueInput.value);
     localStorage.setItem('mikeMetronomeBasicAccents', JSON.stringify(basicAccents));
 
-    // Update de Italiaanse term als BPM wijzigt
+    // Update de dropdown direct
     updateDropdownVisuals();
 }
 
@@ -239,7 +271,6 @@ function loadSettings() {
         try { savedSequences = JSON.parse(savedSongsStore); } catch(e) { savedSequences = []; }
     }
     
-    // Update de Italiaanse term bij opstarten
     updateDropdownVisuals();
 }
 
@@ -253,7 +284,7 @@ function generateDefaultAccents(count) {
     return arr;
 }
 
-// 6. Saved Sequences Logic
+// 7. Saved Sequences Logic
 function resetSequence() {
     if(confirm("Start a new empty sequence? Unsaved changes will be lost.")) {
         sequence = [{ name: "", bpm: 100, beats: 4, value: 4, bars: 4, accents: [2,0,0,0] }];
@@ -339,7 +370,7 @@ function renderSavedSongsMenu() {
     }
 }
 
-// 7. Navigation Logic
+// 8. Navigation Logic
 function switchTab(mode) {
     stopMetronome(); 
     currentMode = mode;
@@ -356,7 +387,7 @@ function switchTab(mode) {
     }
 }
 
-// 8. UI Logic: Count In
+// 9. UI Logic: Count In
 function initCountInUI() {
     countInCheck.checked = countInSettings.enabled;
     ciBpm.value = countInSettings.bpm;
@@ -406,7 +437,7 @@ function updateCountInDots() {
     });
 }
 
-// 9. UI Logic: Basic Mode
+// 10. UI Logic: Basic Mode
 function updateBasicDots(count) {
     count = parseInt(count);
     let oldAccents = [...basicAccents];
@@ -438,7 +469,7 @@ function renderBasicDotsUI() {
     });
 }
 
-// 10. UI Logic: Advanced Steps
+// 11. UI Logic: Advanced Steps
 function renderStepList() {
     const container = document.getElementById('stepListContainer');
     container.innerHTML = '';
@@ -544,7 +575,7 @@ function updateStep(index, field, value) {
     saveSequence();
 }
 
-// 11. Audio Engine
+// 12. Audio Engine
 function playSound(freq, time) {
     const osc = audioContext.createOscillator();
     const gain = audioContext.createGain();
@@ -753,6 +784,7 @@ function scheduleAdvanced() {
     }
 }
 
+// 13. Main Button Event Listener
 mainBtn.addEventListener('click', () => {
     if (isRunning) {
         stopMetronome();
@@ -784,7 +816,7 @@ mainBtn.addEventListener('click', () => {
     }
 });
 
-// 12. Tap Tempo Logic
+// 14. Tap Tempo Logic
 function handleTap() {
     const btn = document.getElementById('tapBtn');
     const now = Date.now();
@@ -834,37 +866,6 @@ function handleTap() {
     btn.textContent = `BPM: ${bpm}`;
     btn.style.color = "#fff";
     btn.style.borderColor = "#fff";
-}
-
-
-/* --- HELPER FUNCTIONS FOR ITALIAN TEMPO --- */
-function initTempoDropdown() {
-    tempoSelect.innerHTML = ""; 
-    tempoMarkings.forEach(t => {
-        const option = document.createElement('option');
-        option.value = t.name;
-        option.text = t.name;
-        tempoSelect.appendChild(option);
-    });
-}
-
-function changeTempoFromDropdown() {
-    const selectedName = tempoSelect.value;
-    const match = tempoMarkings.find(t => t.name === selectedName);
-    
-    if (match) {
-        bpmInput.value = match.default;
-        saveBasicSettings(); 
-    }
-}
-
-function updateDropdownVisuals() {
-    const currentBpm = parseInt(bpmInput.value);
-    const match = tempoMarkings.find(t => currentBpm >= t.min && currentBpm < t.max);
-    
-    if (match) {
-        tempoSelect.value = match.name;
-    }
 }
 
 
@@ -919,9 +920,9 @@ if ("serviceWorker" in navigator) {
     });
 }
 
-// Start de App
-initTempoDropdown(); // Eerst de dropdown vullen!
-loadSettings(); // Dan settings laden (die de dropdown updaten)
+// Start de App (Deze volgorde is nu veilig)
+initTempoDropdown(); 
+loadSettings(); 
 initAccordionMenu();
 loadVersionFromSW(); 
 initCountInUI();
