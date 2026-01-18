@@ -361,3 +361,26 @@ button#mainActionBtn.stop { background-color: #ff5252; color: white; }
     background-color: rgba(3, 218, 198, 0.1);
     transform: scale(0.98);
 }
+
+/* --- TEMPO DROPDOWN --- */
+.tempo-dropdown {
+    width: 100%;
+    margin-top: 8px; /* Ruimte tussen BPM veld en dropdown */
+    background-color: #1e1e1e; /* Donkere achtergrond */
+    color: #03dac6; /* Accentkleur (Teal) */
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    text-align-last: center; /* Zorgt dat de tekst gecentreerd staat */
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none; /* Verwijdert standaard iOS/Android styling voor strakker look */
+    appearance: none;
+}
+
+.tempo-dropdown:focus {
+    border-color: #03dac6;
+}
