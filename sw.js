@@ -1,4 +1,4 @@
-const CACHE_NAME = "metronome-v3.53"; // Verhoog dit nummer bij elke update!
+const CACHE_NAME = "metronome-v3.55"; // Verhoog dit nummer bij elke update!
 const ASSETS = [
   "./",
   "./index.html",
