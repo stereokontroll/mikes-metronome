@@ -61,7 +61,8 @@ body {
 }
 .menu-overlay.open { display: block; opacity: 1; }
 
-/* The Sliding Drawer */
+/* The Sliding Drawer (AANGEPAST VOOR FLEXBOX) */
+/* The Sliding Drawer (FIXED LAYOUT) */
 .menu-drawer {
     position: fixed; top: 0; left: 0; 
     width: 280px;
@@ -71,14 +72,31 @@ body {
     transition: transform 0.3s ease-out;
     box-shadow: 2px 0 10px rgba(0,0,0,0.5);
     padding: 20px;
+    
+    /* BELANGRIJK: Flexbox instellingen voor scrolling */
     height: 100dvh; 
     box-sizing: border-box;
-    display: block; 
-    overflow-y: auto; 
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;        /* Scrollen als het niet past */
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 80px;
 }
 .menu-drawer.open { transform: translateX(0); }
+
+/* NIEUWE CLASS: Bovenste content */
+.menu-grow-content {
+    flex: 1 0 auto; /* 1=Grow (neem ruimte in), 0=Shrink (niet pletten!), auto=Basis */
+    display: flex;
+    flex-direction: column;
+}
+
+/* NIEUWE CLASS: Onderste content */
+.menu-bottom-section {
+    flex-shrink: 0; /* Nooit pletten */
+    margin-top: 20px;
+    border-top: 1px solid #333;
+    padding-top: 15px;
+}
 
 .menu-header { font-size: 22px; font-weight: bold; margin-bottom: 20px; color: #03dac6; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 30px;}
 .close-menu-btn {
@@ -146,6 +164,52 @@ body {
     padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;
     margin-top: 10px; margin-bottom: 20px; 
 }
+
+/* --- PLAY STORE BUTTON (SUBTLE) --- */
+.play-store-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px; /* Ruimte tussen icoon en tekst */
+    background-color: #252525;
+    border: 1px solid #444;
+    color: #ccc;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+    width: fit-content; /* Niet meer volle breedte, maar passend */
+    margin-left: auto;
+    margin-right: auto; /* Centreren */
+}
+
+.play-store-btn:hover {
+    background-color: #333;
+    border-color: #fff;
+    color: #fff;
+}
+
+.play-store-btn span {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-align: left;
+}
+
+.play-store-btn strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.play-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
 .version-text { text-align: center; font-size: 11px; color: #555; margin-bottom: 40px; font-family: monospace; }
 
 /* --- TABS --- */
@@ -260,7 +324,6 @@ input:focus { border-color: #03dac6; }
 .btn-reset { border-color: #555; color: #aaa; }
 .btn-reset:hover { background: #444; border-color: #666; color: #fff;}
 
-/* Nieuwe styling voor de Share knop in de sequence list */
 .btn-share {
     border-color: #555; color: #03dac6; margin-top: 10px; width: 100%;
 }
@@ -269,7 +332,7 @@ input:focus { border-color: #03dac6; }
 
 .repeat-wrapper {
     margin-top: 25px; 
-    width: 100%; /* Volle breedte binnen de parent */
+    width: 100%; 
     box-sizing: border-box;
     display: flex; align-items: center; gap: 10px;
     background: #252525; padding: 12px; border-radius: 8px; border-top: 2px solid #444; position: relative; z-index: 2;
