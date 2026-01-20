@@ -16,37 +16,37 @@
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
   "screenshots": [
     {
-      "src": "screen1.png",
+      "src": "./screen1.png",
       "sizes": "426x928",
       "type": "image/png",
       "form_factor": "narrow"
     },
     {
-      "src": "screen2.png",
+      "src": "./screen2.png",
       "sizes": "423x924",
       "type": "image/png",
       "form_factor": "narrow"
     },
     {
-      "src": "screen3.png",
+      "src": "./screen3.png",
       "sizes": "1173x814",
       "type": "image/png",
       "form_factor": "wide"
     },
     {
-      "src": "screen4.png",
+      "src": "./screen4.png",
       "sizes": "1176x816",
       "type": "image/png",
       "form_factor": "wide"
