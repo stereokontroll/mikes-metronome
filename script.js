@@ -80,6 +80,10 @@ const ciValue = document.getElementById('ciValue');
 const ciBars = document.getElementById('ciBars');
 const ciAccentsContainer = document.getElementById('ciAccentsContainer');
 
+// Share Elements
+const shareOverlay = document.getElementById('shareOverlay');
+const qrcodeContainer = document.getElementById('qrcode');
+
 
 // --- FUNCTIONS ---
 
@@ -158,7 +162,7 @@ async function loadVersionFromSW() {
 
 // 5. Helper Functions for Tempo Dropdown (WITH SAFETY CHECKS)
 function initTempoDropdown() {
-    if (!tempoSelect) return; // VEILIGHEIDSCHECK: Stop als dropdown nog niet bestaat
+    if (!tempoSelect) return; 
     
     tempoSelect.innerHTML = ""; 
     tempoMarkings.forEach(t => {
@@ -170,7 +174,7 @@ function initTempoDropdown() {
 }
 
 function changeTempoFromDropdown() {
-    if (!tempoSelect) return; // VEILIGHEIDSCHECK
+    if (!tempoSelect) return; 
 
     const selectedName = tempoSelect.value;
     const match = tempoMarkings.find(t => t.name === selectedName);
@@ -182,7 +186,7 @@ function changeTempoFromDropdown() {
 }
 
 function updateDropdownVisuals() {
-    if (!tempoSelect) return; // VEILIGHEIDSCHECK
+    if (!tempoSelect) return; 
 
     const currentBpm = parseInt(bpmInput.value);
     const match = tempoMarkings.find(t => currentBpm >= t.min && currentBpm < t.max);
@@ -276,7 +280,6 @@ function loadSettings() {
         try { savedSequences = JSON.parse(savedSongsStore); } catch(e) { savedSequences = []; }
     }
     
-    // Fallback voor accenten
     const savedBasicAccents = localStorage.getItem('mikeMetronomeBasicAccents');
     if(savedBasicAccents) {
         basicAccents = JSON.parse(savedBasicAccents);
@@ -285,7 +288,6 @@ function loadSettings() {
         updateBasicDots(parseInt(beatCountInput.value));
     }
 
-    // Default sequence indien leeg
     if(sequence.length === 0) {
         sequence = [
             { name: "", bpm: 100, beats: 4, value: 4, bars: 4, accents: [2,0,0,0] }
@@ -889,7 +891,7 @@ function handleTap() {
     btn.style.borderColor = "#fff";
 }
 
-// 15. START STOP METRONOME FUNCTION (MOVED TO GLOBAL SCOPE for SAFETY)
+// 15. START STOP METRONOME FUNCTION
 function stopMetronome() {
     clearTimeout(timerID);
     isRunning = false;
@@ -907,8 +909,109 @@ function stopMetronome() {
     releaseWakeLock();
 }
 
+/* --- SHARE FUNCTIONALITY --- */
 
-/* --- INITIALIZATION EXECUTION (CLEANED UP & SAFE) --- */
+function openShareModal() {
+    shareOverlay.style.display = "flex";
+
+    // 1. Data voorbereiden
+    const dataToShare = {
+        s: sequence,
+        c: countInSettings
+    };
+    
+    // 2. Comprimeren
+    const jsonString = JSON.stringify(dataToShare);
+    const compressed = LZString.compressToEncodedURIComponent(jsonString);
+    
+    // 3. Link maken
+    // We gebruiken window.location.href maar strippen eventuele bestaande parameters
+    const baseUrl = window.location.origin + window.location.pathname;
+    const fullUrl = baseUrl + "?song=" + compressed;
+
+    // 4. QR Code genereren
+    qrcodeContainer.innerHTML = ""; // Eerst leegmaken
+    new QRCode(qrcodeContainer, {
+        text: fullUrl,
+        width: 180,
+        height: 180,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.M
+    });
+
+    // Opslaan voor de Share-knop
+    window.currentShareUrl = fullUrl;
+}
+
+function closeShareModal(e) {
+    // Alleen sluiten als je op de overlay klikt (niet op de box) OF op de close button
+    if (e === null || e.target === shareOverlay) {
+        shareOverlay.style.display = "none";
+    }
+}
+
+async function shareLinkNative() {
+    const url = window.currentShareUrl;
+    
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: "Mike's Metronome Sequence",
+                text: "Here is a sequence I made in Mike's Metronome!",
+                url: url
+            });
+        } catch (err) {
+            console.log("Share canceled or failed", err);
+        }
+    } else {
+        // Fallback: Kopiëren naar klembord
+        try {
+            await navigator.clipboard.writeText(url);
+            alert("Link copied to clipboard!");
+        } catch (err) {
+            prompt("Copy this link:", url);
+        }
+    }
+}
+
+function checkSharedData() {
+    const params = new URLSearchParams(window.location.search);
+    const compressedData = params.get('song');
+
+    if (compressedData) {
+        try {
+            const jsonString = LZString.decompressFromEncodedURIComponent(compressedData);
+            if (jsonString) {
+                const data = JSON.parse(jsonString);
+                
+                if (data.s && confirm("Import shared sequence? This will overwrite your current advanced sequence.")) {
+                    sequence = data.s;
+                    if(data.c) countInSettings = data.c;
+                    
+                    saveSequence();
+                    saveCountIn();
+                    
+                    // Interface updaten
+                    renderStepList();
+                    initCountInUI();
+                    
+                    // Schakel naar advanced tab
+                    switchTab('advanced');
+                    
+                    // URL opschonen (zodat hij niet opnieuw vraagt bij refresh)
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+        } catch (e) {
+            console.error("Error importing data", e);
+            alert("Invalid link data.");
+        }
+    }
+}
+
+
+/* --- INITIALIZATION EXECUTION --- */
 
 // Service Worker Logic
 if ("serviceWorker" in navigator) {
@@ -947,7 +1050,7 @@ if ("serviceWorker" in navigator) {
     });
 }
 
-// Start de App (Definitieve Veilige Volgorde)
+// Start de App
 initTempoDropdown(); 
 loadSettings(); 
 initAccordionMenu();
@@ -955,3 +1058,6 @@ loadVersionFromSW();
 initCountInUI();
 renderStepList();
 renderSavedSongsMenu();
+
+// Check of er gedeelde data in de URL zit
+checkSharedData();
