@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy | Mike's Metronome</title>
+    
+    <link rel="icon" type="image/png" href="icon-512.png">
+
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #121212; /* Dark mode background */
-            color: #e0e0e0; /* Off-white text */
+            background-color: #121212;
+            color: #e0e0e0;
             line-height: 1.6;
             margin: 0;
             padding: 20px;
@@ -21,12 +24,24 @@
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: left; /* Zorgt dat tekst links lijnt, ondanks flex body */
+        }
+        /* Nieuwe stijl voor het logo bovenaan */
+        .header-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header-logo img {
+            width: 80px; /* Grootte van het logo op de pagina */
+            height: auto;
+            border-radius: 12px; /* Mooie afgeronde hoekjes net als je app icoon */
         }
         h1 {
             color: #ffffff;
-            border-bottom: 2px solid #4CAF50; /* Green accent */
+            border-bottom: 2px solid #4CAF50;
             padding-bottom: 10px;
             margin-bottom: 30px;
+            text-align: center; /* Titel mooi in het midden onder het logo */
         }
         h2 {
             color: #4CAF50;
@@ -46,6 +61,7 @@
             color: #888;
             border-top: 1px solid #333;
             padding-top: 20px;
+            text-align: center;
         }
         a {
             color: #4CAF50;
@@ -56,6 +72,11 @@
 <body>
 
     <div class="container">
+        
+        <div class="header-logo">
+            <img src="icon-512.png" alt="Mike's Metronome Logo">
+        </div>
+
         <h1>Privacy Policy</h1>
         
         <p>Last updated: January 2026</p>
