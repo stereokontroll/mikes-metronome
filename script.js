@@ -1010,6 +1010,25 @@ function checkSharedData() {
     }
 }
 
+/* --- APP INSTALL CHECK (MODIFIED) --- */
+function checkAppInstallStatus() {
+    // Check of app al geïnstalleerd is (Standalone mode)
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                         window.navigator.standalone === true;
+
+    // Check of het een iOS apparaat is (iPhone/iPad/iPod)
+    // We willen de Play Store link VERBERGEN voor iOS gebruikers.
+    // We tonen hem voor iedereen anders (Android, Windows, Mac, Linux).
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    // Als NIET geïnstalleerd EN NIET iOS -> Toon banner
+    if (!isStandalone && !isIOS) {
+        const promo = document.getElementById('androidPromo');
+        if(promo) promo.style.display = 'block';
+    }
+}
+
 
 /* --- INITIALIZATION EXECUTION --- */
 
@@ -1061,3 +1080,6 @@ renderSavedSongsMenu();
 
 // Check of er gedeelde data in de URL zit
 checkSharedData();
+
+// Check of we de Play Store link moeten tonen (Aangepaste logica)
+checkAppInstallStatus();
