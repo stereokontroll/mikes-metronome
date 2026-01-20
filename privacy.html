@@ -8,64 +8,107 @@
     <link rel="icon" type="image/png" href="icon-512.png">
 
     <style>
+        /* DE KLEUREN UIT JE STYLE.CSS */
+        :root {
+            --brand-color: #03dac6; /* Jouw exacte teal kleur */
+            --bg-color: #121212;    /* Jouw body achtergrond */
+            --card-bg: #1e1e1e;     /* Jouw panel achtergrond */
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
+            /* Hetzelfde lettertype als je app */
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             line-height: 1.6;
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
+            /* Voorkomt dat het scherm wit flitst bij laden op sommige telefoons */
+            -webkit-tap-highlight-color: transparent; 
         }
+
         .container {
             max-width: 800px;
-            background-color: #1e1e1e;
+            width: 100%;
+            background-color: var(--card-bg);
             padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            text-align: left; /* Zorgt dat tekst links lijnt, ondanks flex body */
+            border-radius: 15px; /* Iets ronder, zoals je controls class */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            text-align: left;
+            box-sizing: border-box;
         }
-        /* Nieuwe stijl voor het logo bovenaan */
+
         .header-logo {
             text-align: center;
             margin-bottom: 20px;
         }
+
         .header-logo img {
-            width: 80px; /* Grootte van het logo op de pagina */
+            width: 80px;
             height: auto;
-            border-radius: 12px; /* Mooie afgeronde hoekjes net als je app icoon */
+            border-radius: 15px; /* Matcht met de container border-radius */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
+
         h1 {
-            color: #ffffff;
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 10px;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--brand-color);
+            padding-bottom: 15px;
             margin-bottom: 30px;
-            text-align: center; /* Titel mooi in het midden onder het logo */
+            text-align: center;
+            font-size: 24px;
         }
+
         h2 {
-            color: #4CAF50;
-            margin-top: 30px;
-            font-size: 1.2em;
+            color: var(--brand-color);
+            margin-top: 35px;
+            font-size: 1.3em;
+            font-weight: bold;
         }
+
         p {
             margin-bottom: 15px;
+            color: #e0e0e0; /* Iets zachter wit voor leestekst */
         }
+
+        ul {
+            margin-bottom: 15px;
+            color: #e0e0e0;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+
         .highlight {
             font-weight: bold;
-            color: #ffffff;
+            color: var(--brand-color);
         }
+
         .footer {
-            margin-top: 50px;
+            margin-top: 60px;
             font-size: 0.9em;
-            color: #888;
+            color: var(--text-muted);
             border-top: 1px solid #333;
             padding-top: 20px;
             text-align: center;
+            font-family: monospace; /* Matcht met je .version-text */
         }
+
         a {
-            color: #4CAF50;
+            color: var(--brand-color);
             text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: #fff; /* Wit bij hover, net als in je menu */
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -89,12 +132,12 @@
         <p>We do not collect, store, or share any personal information. We do not have servers that track your usage. We do not know who you are, where you are, or what songs you are practicing.</p>
         
         <ul>
-            <li>No analytical trackers (like Google Analytics).</li>
+            <li>No analytical trackers.</li>
             <li>No advertising IDs.</li>
             <li>No account registration required.</li>
         </ul>
 
-        <h2>2. Local Storage (How the app remembers settings)</h2>
+        <h2>2. Local Storage</h2>
         <p>To make the app useful, it needs to remember your preferences (like your last used BPM, time signature, or visual theme). We use a standard web technology called <span class="highlight">Local Storage</span> to do this.</p>
         
         <p><strong>This data lives 100% on your device.</strong> It is never sent to me or any third party. If you uninstall the app or clear your browser cache, this data is simply erased.</p>
