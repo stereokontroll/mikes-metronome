@@ -28,47 +28,62 @@
     </div>
 
     <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+    
     <div class="menu-drawer" id="menuDrawer">
         <button class="close-menu-btn" onclick="toggleMenu()" aria-label="Close menu">×</button>
-        <div class="menu-header">Menu</div>
         
-        <button class="accordion-btn">💾 Saved Songs</button>
-        <div class="accordion-panel">
-            <div id="savedSongsList">
-                <p style="font-size: 12px; color:#888; text-align:center; padding: 10px 0;">No songs saved yet</p>
+        <div class="menu-grow-content">
+            <div class="menu-header">Menu</div>
+            
+            <button class="accordion-btn">💾 Saved Songs</button>
+            <div class="accordion-panel">
+                <div id="savedSongsList">
+                    <p style="font-size: 12px; color:#888; text-align:center; padding: 10px 0;">No songs saved yet</p>
+                </div>
+            </div>
+
+            <button class="accordion-btn">🔊 Sound</button>
+            <div class="accordion-panel">
+                <label class="sound-option">
+                    <input type="radio" name="soundType" value="high" onclick="setSoundType('high')">
+                    <span>Sharp (Default)</span>
+                </label>
+                <label class="sound-option">
+                    <input type="radio" name="soundType" value="wood" onclick="setSoundType('wood')">
+                    <span>Wood (Click)</span>
+                </label>
+                <label class="sound-option">
+                    <input type="radio" name="soundType" value="soft" onclick="setSoundType('soft')">
+                    <span>Soft (Sine)</span>
+                </label>
+            </div>
+
+            <button class="accordion-btn">👋 About</button>
+            <div class="accordion-panel">
+                <p class="menu-text">
+                    Hi, I'm Mike!<br>I'm a drummer myself.<br>I originally built this app to help my son practice for his trumpet exam, but I decided to share it with the world.
+                    <br><br>
+                    Enjoy practicing!
+                </p>
+            </div>
+
+            <div class="menu-section" style="margin-top: 20px;">
+                <h3>Support</h3>
+                <p class="menu-text">Do you like this app? Consider supporting the development.</p>
+                <a href="https://www.buymeacoffee.com/mikesmetronome" target="_blank" class="coffee-btn">
+                    ☕ Buy me a coffee
+                </a>
             </div>
         </div>
-
-        <button class="accordion-btn">🔊 Sound</button>
-        <div class="accordion-panel">
-            <label class="sound-option">
-                <input type="radio" name="soundType" value="high" onclick="setSoundType('high')">
-                <span>Sharp (Default)</span>
-            </label>
-            <label class="sound-option">
-                <input type="radio" name="soundType" value="wood" onclick="setSoundType('wood')">
-                <span>Wood (Click)</span>
-            </label>
-            <label class="sound-option">
-                <input type="radio" name="soundType" value="soft" onclick="setSoundType('soft')">
-                <span>Soft (Sine)</span>
-            </label>
-        </div>
-
-        <button class="accordion-btn">👋 About</button>
-        <div class="accordion-panel">
-            <p class="menu-text">
-                Hi, I'm Mike!<br>I'm a drummer myself.<br>I originally built this app to help my son practice for his trumpet exam, but I decided to share it with the world.
-                <br><br>
-                Enjoy practicing!
+        <div id="androidPromo" class="menu-bottom-section" style="display: none;">
+            <p class="menu-text" style="text-align: center; margin-bottom: 10px; color: #888; font-size: 12px;">
+                Using the website? Get the official app:
             </p>
-        </div>
-
-        <div class="menu-section" style="margin-top: 20px;">
-            <h3>Support</h3>
-            <p class="menu-text">Do you like this app? Consider supporting the development.</p>
-            <a href="https://www.buymeacoffee.com/mikesmetronome" target="_blank" class="coffee-btn">
-                ☕ Buy me a coffee
+            <a href="https://play.google.com/store/apps/details?id=com.stereokontroll.metronome" target="_blank" class="play-store-btn">
+                <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path fill="#ffffff" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-37.5 37.5 37.5 37.5 58.9-34.1c18.1-10.5 18.1-27.3 0-37.8zM104.6 499l220.8-221.2 60.1 60.1L104.6 499z"/>
+                </svg>
+                <span>Get it on <strong>Google Play</strong></span>
             </a>
         </div>
         
