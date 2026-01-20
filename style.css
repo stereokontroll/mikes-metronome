@@ -13,7 +13,7 @@ body {
     overflow: hidden;
 }
 
-/* --- FLASH OVERLAY (NEW) --- */
+/* --- FLASH OVERLAY --- */
 #flashOverlay {
     position: fixed;
     top: 0;
@@ -71,8 +71,6 @@ body {
     transition: transform 0.3s ease-out;
     box-shadow: 2px 0 10px rgba(0,0,0,0.5);
     padding: 20px;
-    
-    /* GLOBAL DRAWER SCROLLING */
     height: 100dvh; 
     box-sizing: border-box;
     display: block; 
@@ -109,19 +107,9 @@ body {
     position: relative;
     z-index: 2;
 }
-.accordion-btn.active, .accordion-btn:hover {
-    background-color: #333;
-}
-.accordion-btn:after {
-    content: '\002B'; 
-    color: #03dac6;
-    font-weight: bold;
-    float: right;
-    margin-left: 5px;
-}
-.accordion-btn.active:after {
-    content: "\2212"; 
-}
+.accordion-btn.active, .accordion-btn:hover { background-color: #333; }
+.accordion-btn:after { content: '\002B'; color: #03dac6; font-weight: bold; float: right; margin-left: 5px; }
+.accordion-btn.active:after { content: "\2212"; }
 
 .accordion-panel {
     padding: 0 5px; 
@@ -133,8 +121,6 @@ body {
 }
 
 .menu-text { font-size: 14px; line-height: 1.5; color: #ddd; margin-top: 10px; padding: 0 5px; }
-
-/* Saved Songs List Styles */
 #savedSongsList { margin-top: 5px; }
 
 .saved-song-item {
@@ -144,22 +130,15 @@ body {
 .saved-song-item:last-child { border-bottom: none; }
 .saved-song-item:hover { background: #252525; color: #fff; }
 .saved-song-name { flex: 1; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.delete-song-btn {
-    background: none; border: none; color: #ff5252; 
-    font-size: 18px; cursor: pointer; padding: 0 10px;
-}
+.delete-song-btn { background: none; border: none; color: #ff5252; font-size: 18px; cursor: pointer; padding: 0 10px; }
 
-/* Sound Radio Buttons */
 .sound-option {
     display: flex; align-items: center; gap: 12px; padding: 12px 10px;
     color: #ccc; cursor: pointer; border-bottom: 1px solid #333;
 }
 .sound-option:last-child { border-bottom: none; }
 .sound-option:hover { background: #252525; color: white; }
-
-.sound-option input[type="radio"] {
-    width: 20px; height: 20px; accent-color: #03dac6; margin: 0; cursor: pointer;
-}
+.sound-option input[type="radio"] { width: 20px; height: 20px; accent-color: #03dac6; margin: 0; cursor: pointer; }
 .sound-option span { font-size: 15px; font-weight: 500; }
 
 .coffee-btn {
@@ -167,10 +146,7 @@ body {
     padding: 12px; border-radius: 8px; text-align: center; font-weight: bold;
     margin-top: 10px; margin-bottom: 20px; 
 }
-
-.version-text {
-    text-align: center; font-size: 11px; color: #555; margin-bottom: 40px; font-family: monospace;
-}
+.version-text { text-align: center; font-size: 11px; color: #555; margin-bottom: 40px; font-family: monospace; }
 
 /* --- TABS --- */
 .tabs {
@@ -196,7 +172,6 @@ body {
     box-shadow: 0 4px 10px rgba(0,0,0,0.5); margin-bottom: 20px;
     position: relative; z-index: 2;
 }
-
 h1 { margin: 0 0 20px 0; font-size: 20px; color: #e0e0e0; }
 .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 label { display: block; margin-bottom: 5px; color: #aaaaaa; font-size: 12px; }
@@ -208,9 +183,7 @@ input[type="number"], select {
 }
 input:focus { border-color: #03dac6; }
 
-.beat-visualizer {
-    display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0; min-height: 30px;
-}
+.beat-visualizer { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0; min-height: 30px; }
 .beat-dot {
     width: 20px; height: 20px; background-color: #333;
     border-radius: 50%; cursor: pointer; border: 2px solid #555; transition: transform 0.1s;
@@ -241,7 +214,6 @@ input:focus { border-color: #03dac6; }
     margin-bottom: 15px; border-left: 4px solid #444; position: relative;
 }
 .step-item.active { border-left-color: #03dac6; background: #2f2f2f; }
-
 .step-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 
 .step-name-input {
@@ -253,51 +225,28 @@ input:focus { border-color: #03dac6; }
 .step-name-input::placeholder { color: #666; }
 
 .delete-btn { color: #ff5252; background: none; border: none; font-size: 20px; font-weight: bold; padding: 0 10px; cursor: pointer;}
-
 .step-inputs { display: flex; gap: 5px; margin-bottom: 10px; }
 .step-input-group { flex: 1; }
 .step-input-group label { font-size: 10px; margin-bottom: 2px;}
 .step-input-group input, .step-input-group select { font-size: 14px; padding: 5px; height: 35px; }
 
-/* Container voor de bolletjes: centreren en meer ruimte */
 .step-accents { 
-    display: flex; 
-    gap: 10px;               /* Meer tussenruimte (was 5px) */
-    flex-wrap: wrap; 
-    justify-content: center; /* Centreert de bolletjes in het midden */
-    padding-top: 10px; 
-    border-top: 1px solid #333; 
-    margin-top: 8px;
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; 
+    padding-top: 10px; border-top: 1px solid #333; margin-top: 8px;
 }
-
-/* De bolletjes zelf: groter en makkelijker te raken */
 .mini-dot { 
-    width: 22px;             /* Groter (was 15px) */
-    height: 22px;            /* Groter (was 15px) */
-    border-radius: 50%; 
-    border: 1px solid #555; 
-    background: #333; 
-    cursor: pointer; 
-    transition: all 0.1s; 
-    flex-shrink: 0;          /* Zorgt dat ze niet 'geplet' worden op kleine schermen */
+    width: 22px; height: 22px; border-radius: 50%; border: 1px solid #555; 
+    background: #333; cursor: pointer; transition: all 0.1s; flex-shrink: 0;
 }
-
-/* Kleuren en speel-status blijven hetzelfde */
 .mini-dot[data-level="1"] { background-color: #03dac6; border-color: #03dac6; }
 .mini-dot[data-level="2"] { background-color: #ff5252; border-color: #ff5252; }
-.mini-dot.playing {
-    transform: scale(1.3);   /* Iets subtielere schaal (was 1.5) omdat ze nu al groter zijn */
-    box-shadow: 0 0 10px white; 
-    border-color: #fff; 
-    z-index: 10;
-}
+.mini-dot.playing { transform: scale(1.3); box-shadow: 0 0 10px white; border-color: #fff; z-index: 10; }
 
 .add-btn {
     background: #333; color: #fff; border: 1px dashed #666; cursor: pointer;
     width: 100%; padding: 15px; border-radius: 8px; margin-top: 10px; font-weight: bold;
 }
 
-/* ACTION BUTTONS */
 .action-btn-container { display: flex; gap: 10px; margin-top: 15px; }
 .secondary-btn {
     flex: 1; background: #333; color: #ccc; border: 2px solid #444; 
@@ -305,24 +254,31 @@ input:focus { border-color: #03dac6; }
     display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s;
 }
 .secondary-btn:hover { background: #444; color: #fff; }
+
 .btn-save { border-color: #033631; color: #03dac6; }
 .btn-save:hover { background: #033631; }
 .btn-reset { border-color: #555; color: #aaa; }
 .btn-reset:hover { background: #444; border-color: #666; color: #fff;}
 
+/* Nieuwe styling voor de Share knop in de sequence list */
+.btn-share {
+    border-color: #555; color: #03dac6; margin-top: 10px; width: 100%;
+}
+.btn-share:hover { background: #033631; border-color: #03dac6; }
+
+
 .repeat-wrapper {
-    margin-top: 25px; width: 90%; max-width: 340px;
+    margin-top: 25px; 
+    width: 100%; /* Volle breedte binnen de parent */
+    box-sizing: border-box;
     display: flex; align-items: center; gap: 10px;
-    background: #252525; padding: 12px; border-radius: 8px;
-    border-top: 2px solid #444;
-    position: relative; z-index: 2;
+    background: #252525; padding: 12px; border-radius: 8px; border-top: 2px solid #444; position: relative; z-index: 2;
 }
 .repeat-wrapper input { width: 22px; height: 22px; accent-color: #03dac6; margin: 0; }
 .repeat-wrapper label { font-size: 15px; color: #fff; margin: 0; cursor: pointer; font-weight: bold; }
 
 .status-display {
-    position: fixed; top: 70px; left: 0; width: 100%; text-align: center;
-    pointer-events: none; z-index: 10;
+    position: fixed; top: 70px; left: 0; width: 100%; text-align: center; pointer-events: none; z-index: 10;
 }
 .status-text {
     background: rgba(0,0,0,0.85); padding: 5px 15px; border-radius: 20px;
@@ -332,59 +288,54 @@ input:focus { border-color: #03dac6; }
 
 .main-btn-container { position: fixed; bottom: 20px; width: 85%; max-width: 320px; z-index: 100; }
 button#mainActionBtn {
-    background-color: #03dac6; color: #000; border: none;
-    padding: 15px; font-size: 20px; border-radius: 50px; cursor: pointer;
-    width: 100%; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    background-color: #03dac6; color: #000; border: none; padding: 15px; font-size: 20px; 
+    border-radius: 50px; cursor: pointer; width: 100%; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 button#mainActionBtn.stop { background-color: #ff5252; color: white; }
 
-/* --- TAP TEMPO BUTTON --- */
 .tap-btn {
-    background: transparent;
-    border: 2px solid #444;
-    color: #888;
-    width: 100%;
-    padding: 15px;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 15px;
-    cursor: pointer;
-    transition: all 0.1s;
-    user-select: none;
+    background: transparent; border: 2px solid #444; color: #888; width: 100%;
+    padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold;
+    margin-top: 15px; cursor: pointer; transition: all 0.1s; user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
-
 .tap-btn:active, .tap-btn.active {
-    border-color: #03dac6;
-    color: #fff;
-    background-color: rgba(3, 218, 198, 0.1);
-    transform: scale(0.98);
+    border-color: #03dac6; color: #fff;
+    background-color: rgba(3, 218, 198, 0.1); transform: scale(0.98);
 }
 
-/* --- TEMPO DROPDOWN (AANGEPAST) --- */
 .tempo-dropdown {
-    width: 100%;           /* Volle breedte */
-    margin-top: 0px;       /* Reset */
-    margin-bottom: 5px;    /* Ruimte aan de onderkant */
-    background-color: transparent; /* Transparant oogt strakker op deze plek */
-    color: #03dac6;        /* Accentkleur */
-    border: 1px solid #333;
-    border-radius: 8px;    /* Iets ronder */
-    padding: 8px;          /* Iets meer lucht */
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    text-align-last: center; 
-    outline: none;
-    cursor: pointer;
-    -webkit-appearance: none;
-    appearance: none;
-    text-transform: uppercase; /* Hoofdletters staat vaak netter voor labels */
-    letter-spacing: 1px;
+    width: 100%; margin-top: 0px; margin-bottom: 5px;
+    background-color: transparent; color: #03dac6; border: 1px solid #333;
+    border-radius: 8px; padding: 8px; font-size: 14px; font-weight: bold;
+    text-align: center; text-align-last: center; outline: none; cursor: pointer;
+    -webkit-appearance: none; appearance: none; text-transform: uppercase; letter-spacing: 1px;
 }
+.tempo-dropdown:focus { border-color: #03dac6; background-color: #1e1e1e; }
 
-.tempo-dropdown:focus {
-    border-color: #03dac6;
-    background-color: #1e1e1e;
+/* --- SHARE OVERLAY STYLES --- */
+.share-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); z-index: 300;
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(5px);
+}
+.share-box {
+    background: #1e1e1e; border: 1px solid #444; padding: 25px;
+    border-radius: 15px; width: 80%; max-width: 300px; text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+.share-header { font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 20px; }
+.qr-container {
+    background: #fff; padding: 15px; border-radius: 10px;
+    display: inline-block; margin-bottom: 10px;
+}
+.share-divider { color: #555; font-size: 12px; margin: 15px 0; font-weight: bold; }
+.copy-link-btn {
+    background: #03dac6; color: #000; border: none; padding: 12px;
+    width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;
+}
+.close-share-btn {
+    background: transparent; border: none; color: #888; margin-top: 15px;
+    cursor: pointer; text-decoration: underline;
 }
