@@ -556,35 +556,11 @@ function toggleStepAccent(stepIdx, beatIdx) {
 }
 
 function addStep() {
-    // Standaardwaarden voor als de lijst helemaal leeg is
     let newBpm = 100;
-    let newBeats = 4;
-    let newValue = 4;
-    let newBars = 4;
-    let newAccents = [2,0,0,0];
-
-    // Als er al een stap bestaat, neem dan alle waarden van de laatste stap over
     if (sequence.length > 0) {
-        const lastStep = sequence[sequence.length - 1];
-        newBpm = lastStep.bpm;
-        newBeats = lastStep.beats;
-        newValue = lastStep.value;
-        newBars = lastStep.bars;
-        // Gebruik de spread operator [...] om een kopie van de array te maken, 
-        // zodat ze niet aan elkaar gelinkt blijven
-        newAccents = [...lastStep.accents]; 
+        newBpm = sequence[sequence.length - 1].bpm;
     }
-    
-    // Voeg de nieuwe stap toe met de gekopieerde (of standaard) waarden
-    sequence.push({ 
-        name: "", 
-        bpm: newBpm, 
-        beats: newBeats, 
-        value: newValue, 
-        bars: newBars, 
-        accents: newAccents 
-    });
-    
+    sequence.push({ name: "", bpm: newBpm, beats: 4, value: 4, bars: 4, accents: [2,0,0,0] });
     renderStepList();
     saveSequence();
 }
