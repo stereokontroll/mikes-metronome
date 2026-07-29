@@ -863,6 +863,13 @@ mainBtn.addEventListener('click', () => {
     }
 });
 
+// --- AUTO-SELECT NUMERIEKE VELDEN ---
+document.addEventListener('focusin', function(e) {
+    if (e.target && e.target.tagName === 'INPUT' && e.target.type === 'number') {
+        e.target.select();
+    }
+});
+
 // 14. Tap Tempo Logic
 function handleTap() {
     const btn = document.getElementById('tapBtn');
