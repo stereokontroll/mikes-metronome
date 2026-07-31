@@ -863,10 +863,26 @@ mainBtn.addEventListener('click', () => {
     }
 });
 
-// --- AUTO-SELECT NUMERIEKE VELDEN ---
+// --- AUTO-OVERWRITE NUMERIEKE VELDEN (ZONDER MOBIELE SELECTIE-POPUP) ---
 document.addEventListener('focusin', function(e) {
     if (e.target && e.target.tagName === 'INPUT' && e.target.type === 'number') {
-        e.target.select();
+        // 1. Sla de huidige waarde tijdelijk op
+        e.target.dataset.oldValue = e.target.value;
+        // 2. Toon de oude waarde als grijze placeholder zodat je ziet wat er stond
+        e.target.placeholder = e.target.value;
+        // 3. Maak de daadwerkelijke invoer leeg, klaar voor nieuwe cijfers
+        e.target.value = '';
+    }
+});
+
+document.addEventListener('focusout', function(e) {
+    if (e.target && e.target.tagName === 'INPUT' && e.target.type === 'number') {
+        // 1. Haal de tijdelijke placeholder weer weg
+        e.target.placeholder = '';
+        // 2. Als je ergens anders klikt zónder iets in te typen, herstel dan de oude waarde
+        if (e.target.value === '') {
+            e.target.value = e.target.dataset.oldValue;
+        }
     }
 });
 
